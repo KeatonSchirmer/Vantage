@@ -1,5 +1,11 @@
+*{
+    box-sizing: border-box;
+}
 body{
     margin-left: 220px; 
+    background: #0B1F3A;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #FFFFFF;
 }
 /*? Top bar */
 .nav {
@@ -8,21 +14,27 @@ body{
     left: 0;
     height: 100vh;
     width: 220px;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: #0B1F3A;
+    color: #FFFFFF;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 5px rgba(244,163,0,0.08);
     z-index: 1000;
 }
 .brand {
     width: 100%;
     text-align: center;
     font-size: larger;
-    color: #007bff;
+    color: #F4A300;
     margin-bottom: 20px;
+}
+.tabs ul li a {
+    color: #FFFFFF;
+}
+.tabs ul li a:hover {
+    color: #F4A300;
 }
 .tabs {
     display: flex;
@@ -45,18 +57,20 @@ body{
     width: 100%;
     text-align: center;
     padding-bottom: 50px;
+    color: #FFFFFF;
 }
 .profile img {
     width: 80px;
     border-radius: 50px;
+    border: 3px solid #F4A300;
 }
 a {
     text-decoration: none;
     font-weight: bolder;
-    color: #007bff;
+    color: #F4A300;
 }
 a:hover {
-    color: #0056b3;
+    color: #FFFFFF;
 }
 ul {
     list-style: none;

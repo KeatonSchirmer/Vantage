@@ -1,9 +1,11 @@
-*{
+* {
     box-sizing: border-box;
 }
-body{
+body {
+    margin-left: 220px;
+    background: #0B1F3A;
     font-family: 'Segoe UI', Arial, sans-serif;
-    margin-left: 220px; 
+    color: #FFFFFF;
 }
 /*? Top bar */
 .nav {
@@ -12,20 +14,20 @@ body{
     left: 0;
     height: 100vh;
     width: 220px;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: #0B1F3A;
+    color: #FFFFFF;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 5px rgba(244,163,0,0.08);
     z-index: 1000;
 }
 .brand {
     width: 100%;
     text-align: center;
     font-size: larger;
-    color: #007bff;
+    color: #F4A300;
     margin-bottom: 20px;
 }
 .tabs {
@@ -38,10 +40,18 @@ body{
     margin: 0;
     font-size: 1.5rem;
 }
-.tabs ul{
+.tabs ul {
     display: flex;
     flex-direction: column;
     gap: 25px;
+}
+.tabs ul li a {
+    color: #FFFFFF;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.tabs ul li a:hover {
+    color: #F4A300;
 }
 .profile {
     margin-top: auto;
@@ -49,31 +59,44 @@ body{
     width: 100%;
     text-align: center;
     padding-bottom: 50px;
+    color: #FFFFFF;
 }
 .profile img {
     width: 80px;
     border-radius: 50px;
+    border: 3px solid #F4A300;
 }
 a {
     text-decoration: none;
     font-weight: bolder;
-    color: #007bff;
+    color: #F4A300;
+    transition: color 0.2s;
 }
 a:hover {
-    color: #0056b3;
-    color: #fff;
+    color: #FFFFFF;
 }
 ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin-left: 220px;
+    padding: 20px;
+    box-sizing: border-box;
+}
 .result-card {
     width: 100%;
     max-width: 600px;
-    background: #f8f9fa;
+    background: #FFFFFF;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 2px solid #F4A300;
+    box-shadow: 0 2px 8px rgba(244,163,0,0.04);
     padding: 32px 36px 28px 36px;
     display: flex;
     flex-direction: column;
@@ -81,67 +104,75 @@ ul {
     transition: box-shadow 0.2s;
     box-sizing: border-box;
     margin-bottom: 20px;
+    color: #0B1F3A;
 }
-
 .result-card:hover {
-    box-shadow: 0 4px 20px rgba(0,123,255,0.1);
+    box-shadow: 0 4px 20px rgba(244,163,0,0.13);
 }
-
-.result-header h3 {
+.result-header h3, .result-header h2 {
     margin: 0 0 12px 0;
     font-size: 1.65rem;
-    color: #007bff;
+    color: #F4A300;
 }
-
 .result-company {
     font-weight: bold;
     font-size: 1.35rem;
     margin-bottom: 4px;
-    color: #333;
+    color: #0B1F3A;
 }
-
 .result-meta {
     color: #555;
     font-size: 1.15rem;
     margin-bottom: 10px;
 }
-
 .result-location {
     font-style: italic;
     color: #666;
     margin-bottom: 12px;
 }
-
 .result-snippet {
-    color: #444;
+    color: #0B1F3A;
     margin-bottom: 14px;
     line-height: 1.6;
     font-size: 1.15rem;
 }
-
-.result-link {
-    background: #007bff;
-    color: #fff;
+.result-link,
+.button-stack .result-link,
+.button-stack button.result-link {
+    background: #F4A300;
+    color: #0B1F3A !important;
     border: none;
     border-radius: 20px;
     padding: 10px 22px;
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.2s;
-    margin-left: 8px;
+    transition: background 0.2s, color 0.2s;
+    margin-left: 0;
+    margin-bottom: 0;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    display: block;
 }
-
-.result-link:hover {
-    background: #0056b3;
+.result-link:hover,
+.button-stack .result-link:hover,
+.button-stack button.result-link:hover {
+    background: #0B1F3A;
+    color: #F4A300 !important;
+    border: 1px solid #F4A300;
 }
-.container {
+.button-stack {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center; /* vertical centering */
-    min-height: 100vh;
-    margin-left: 220px; /* only if you're using a sidebar */
-    padding: 20px;
-    box-sizing: border-box;
+    gap: 1em;
+    margin-top: 1.5em;
+}
+@media (max-width: 900px) {
+    .container {
+        padding: 12px 4px;
+    }
+    .result-card {
+        padding: 18px 8px 14px 8px;
+    }
 }

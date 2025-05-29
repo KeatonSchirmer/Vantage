@@ -1,65 +1,80 @@
+body {
+    background: #0B1F3A;
+    color: #FFFFFF;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+}
 .form-container {
     display: none;
 }
-.form-container.active{
+.form-container.active {
     display: block;
 }
-
-.header{
+.header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     margin: auto;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: #0B1F3A;
+    color: #FFFFFF;
+    padding: 18px 0;
+    box-shadow: 0 2px 8px rgba(244,163,0,0.08);
 }
-.title{
+.title {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 80%;
     margin: auto;
     font-size: larger;
-    color: #007bff;
+    color: #F4A300;
     padding-left: 255px;
 }
-.home{
+.home {
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: x-large;
     width: 20%;
 }
-ul{
+ul {
     text-decoration: none;
     list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
-a{
+a {
     text-decoration: none;
     font-weight: bolder;
-    color: #007bff;
+    color: #F4A300;
+    transition: color 0.2s;
 }
-a:hover{
-    color: #0056b3;
+a:hover {
+    color: #FFFFFF;
 }
-.logreg_button{
+.logreg_button {
     display: flex;
     align-items: center;
     justify-content: center;
     padding-top: 15px;
 }
-.logreg_button button{
+.logreg_button button {
     padding: 15px 30px;
     font-size: 1.1rem;
-    border-radius: 25px; 
+    border-radius: 25px;
     border: none;
-    background-color: #007bff;
-    color: white;
+    background-color: #F4A300;
+    color: #0B1F3A;
     cursor: pointer;
-    transition: background 0.2s;
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s;
 }
-.forms{
+.logreg_button button:hover {
+    background-color: #FFFFFF;
+    color: #F4A300;
+}
+.forms {
     display: flex;
     align-content: center;
     justify-content: center;
@@ -68,14 +83,16 @@ a:hover{
     width: 100%;
 }
 .forms form {
-    width: 400px;         /* Set a larger width for the form */
-    padding: 40px 30px;   /* Add more internal space */
-    background: #fff;
+    width: 400px;
+    padding: 40px 30px;
+    background: #FFFFFF;
     border-radius: 20px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 12px rgba(244,163,0,0.08);
     display: flex;
     flex-direction: column;
     gap: 20px;
+    color: #0B1F3A;
+    border: 2px solid #F4A300;
 }
 .forms input[type="text"],
 .forms input[type="password"],
@@ -83,17 +100,30 @@ a:hover{
     font-size: 1.2rem;
     padding: 15px 20px;
     border-radius: 10px;
-    border: 1px solid #ccc;
+    border: 1.5px solid #F4A300;
+    background: #f4f7fa;
+    color: #0B1F3A;
 }
-
 .forms button {
     font-size: 1.1rem;
     padding: 15px 0;
     border-radius: 10px;
+    background: #F4A300;
+    color: #0B1F3A;
+    border: none;
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s;
 }
-.error{
+.forms button:hover {
+    background: #0B1F3A;
+    color: #F4A300;
+    border: 1.5px solid #F4A300;
+}
+.error {
     display: flex;
     align-content: center;
     justify-content: center;
     font-size: large;
+    color: #F4A300;
+    margin-top: 10px;
 }

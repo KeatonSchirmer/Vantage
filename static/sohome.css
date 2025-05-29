@@ -1,5 +1,8 @@
 body{
     margin-left: 220px; 
+    background: #0B1F3A;
+    color: #FFFFFF;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 /*? Top bar */
 .nav {
@@ -8,20 +11,20 @@ body{
     left: 0;
     height: 100vh;
     width: 220px;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: #0B1F3A;
+    color: #FFFFFF;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 5px rgba(244,163,0,0.08);
     z-index: 1000;
 }
 .brand {
     width: 100%;
     text-align: center;
     font-size: larger;
-    color: #007bff;
+    color: #F4A300;
     margin-bottom: 20px;
 }
 .tabs {
@@ -39,24 +42,35 @@ body{
     flex-direction: column;
     gap: 25px;
 }
+.tabs ul li a {
+    color: #FFFFFF;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.tabs ul li a:hover {
+    color: #F4A300;
+}
 .profile {
     margin-top: auto;
     font-size: 1.2rem;
     width: 100%;
     text-align: center;
     padding-bottom: 50px;
+    color: #FFFFFF;
 }
 .profile img {
     width: 80px;
     border-radius: 50px;
+    border: 3px solid #F4A300;
 }
 a {
     text-decoration: none;
     font-weight: bolder;
-    color: #007bff;
+    color: #F4A300;
+    transition: color 0.2s;
 }
 a:hover {
-    color: #0056b3;
+    color: #FFFFFF;
 }
 ul {
     list-style: none;
@@ -72,59 +86,118 @@ ul {
     width: 100%;
     margin: auto;
     padding-top: 15px;
+    background: #0B1F3A;
 }
 .search_bar input[type="text"] {
     padding: 15px 20px;
     font-size: 1.2rem;
     border-radius: 25px;      
-    border: 1px solid #ccc;
+    border: 1px solid #F4A300;
     outline: none;
     width: 350px;           
     margin-right: 10px;
     box-sizing: border-box;
+    background: #FFFFFF;
+    color: #0B1F3A;
 }
-
 .search_bar button {
     padding: 15px 30px;
     font-size: 1.1rem;
     border-radius: 25px;      
     border: none;
-    background-color: #007bff;
-    color: white;
+    background-color: #F4A300;
+    color: #0B1F3A;
     cursor: pointer;
-    transition: background 0.2s;
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s;
 }
-
 .search_bar button:hover {
-    background-color: #0056b3;
+    background-color: #FFFFFF;
+    color: #F4A300;
 }
 /*? results */
-.results{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+.results-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    justify-items: center;
+    align-items: stretch;
     width: 100%;
-    padding: 10px;
+    padding: 20px 0;
     box-sizing: border-box;
 }
-.results ul{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
+/* Results List */
+.results-list {
+    display: contents;
     width: 100%;
-    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
-.results li{
+.results-list ul{
     flex: 0 1 300px;
     margin: 10px;
-    background-color: #f8f9fa;
+    background-color: #0B1F3A;
     border-radius: 8px;
     padding: 15px;
-    box-shadow: #333;
+    box-shadow: 0 2px 12px rgba(244,163,0,0.09);
     box-sizing: border-box;
+}
+/* Result Card */
+.result-card {
+    width: 100%;
+    font-size: 1.2rem;
+    max-width: 350px;   
+    min-width: 300px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    border: 2px solid #F4A300;
+    box-shadow: 0 2px 12px rgba(244,163,0,0.09);
+    padding: 26px 22px 20px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0;
+    transition: box-shadow 0.2s;
+    box-sizing: border-box;
+    color: #0B1F3A;
+}
+.result-card li{
+    flex: 0 1 300px;
+    margin: 10px;
+    background-color: #0B1F3A;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 12px rgba(244,163,0,0.09);
+    box-sizing: border-box;    
+}
+.result-link {
+    margin-top: 10px;
+    align-self: flex-start;
+    background: #F4A300;
+    color: #0B1F3A !important;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s;
+    border: none;
+}
+.result-link:hover {
+    background: #0B1F3A;
+    color: #F4A300 !important;
+    border: 1px solid #F4A300;
+}
+.result-card:hover {
+    box-shadow: 0 4px 20px rgba(244,163,0,0.13);
+}
+@media (max-width: 1100px) {
+    .results-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 700px) {
+    .results-container {
+        grid-template-columns: 1fr;
+    }
 }
