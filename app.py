@@ -19,7 +19,7 @@ from PIL import Image, ImageDraw
 app = Flask(__name__)
 
 #* DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://ifro_user:Thunder1589@localhost/ifro_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_v76t_user:btcqKvJJQKOB2JYNo7fHkNrl3FpSuNp5@dpg-d0rv1di4d50c73b3drb0-a/user_v76t'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
