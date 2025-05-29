@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='profile.css') }}">
+</head>
+<body>
+    <a href="{{ url_for('home') }}" class="home-btn">Home</a>
+    <div class="container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#user-info" class="active">User Info</a></li>
+                <li><a href="#edit-profile">Edit Profile</a></li>
+                <li><a href="#security">Security</a></li>
+                <li><a href="#billing">Billing</a></li>
+                <li><a href="#resume">Resume/Cover Letter</a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <section class="content" id="user-info">
+                <h2>User Info</h2>
+                <p><span class="label-bold">Name:</span> {{ user.first_name }} {{ user.last_name }}</p>
+                <p><span class="label-bold">Username:</span> {{ user.username }}</p>
+                <p><span class="label-bold">Degree:</span> {{ user.degree }}</p>
+                <p><span class="label-bold">Email:</span> {{ user.email }}</p>
+                <p><span class="label-bold">Address:</span> {{ user.address }}</p>
+                <a href="{{url_for('logout') }}">Logout</a>
+            </section>
+            <section class="content" id="edit-profile" style="display:none;">
+                <h2>Edit Profile</h2>
+                <form method="POST" action="{{ url_for('edit_profile') }}" enctype="multipart/form-data">
+                    <label>First Name:</label>
+                    <input type="text" name="first_name" value="{{ user.first_name }}" required>
+                    <br>
+                    <label>Last Name:</label>
+                    <input type="text" name="last_name" value="{{ user.last_name }}" required>
+                    <br>
+                    <label>Email:</label>
+                    <input type="email" name="email" value="{{ user.email }}" required>
+                    <br>
+                    <label>Degree:</label>
+                    <input type="text" name="degree" value="{{ user.degree }}" required>
+                    <br>
+                    <label>Address:</label>
+                    <input type="text" name="address" value="{{ user.address }}" required>
+                    <br>
+                    <label>Username:</label>
+                    <input type="text" name="username" value="{{ user.username }}" required>
+                    <br>
+
+                    <!-- Cropper CSS -->
+                    <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">
+
+                    <!-- File Upload + Image Preview -->
+                    <input type="file" id="inputImage">
+                    <br>
+                    <img id="imagePreview" style="display: none;">
+                    <br>
+                    <button id="cropBtn">Crop & Upload</button>
+
+                    <!-- JS Cropper -->
+                    <script src="https://unpkg.com/cropperjs"></script>
+                    <script>
+                        let cropper;
+                        const inputImage = document.getElementById('inputImage');
+                        const imagePreview = document.getElementById('imagePreview');
+                        const cropBtn = document.getElementById('cropBtn');
+
+                        inputImage.addEventListener('change', (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                imagePreview.src = e.target.result;
+                                imagePreview.style.display = 'block';
+
+                                // Destroy existing cropper if any
+                                if (cropper) {
+                                    cropper.destroy();
+                                }
+
+                                // Wait for image to load before initializing cropper
+                                imagePreview.onload = function () {
+                                    cropper = new Cropper(imagePreview, {
+                                        aspectRatio: 1,
+                                        viewMode: 1
+                                    });
+                                };
+                            };
+                            reader.readAsDataURL(file);
+                        });
+
+                        cropBtn.addEventListener('click', () => {
+                            if (!cropper) return;
+
+                            cropper.getCroppedCanvas().toBlob((blob) => {
+                                const formData = new FormData();
+                                formData.append('profile_pic', blob, 'cropped.jpg');
+
+                                fetch('/upload_cropped_image', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(res => res.json())
+                                .then(data => alert(data.message))
+                                .catch(err => console.error(err));
+                            });
+                        });
+                    </script>
+
+
+                    <button type="submit">Save Changes</button>
+                </form>
+                {% if edit_message %}
+                    <p style="color:green;">{{ edit_message }}</p>
+                {% endif %}
+            </section>
+            <section class="content" id="security" style="display:none;">
+                <h2>Security</h2>
+                <form method="POST" action="{{ url_for('change_password') }}">
+                    <label for="current_password">Current Password:</label>
+                    <input type="password" name="current_password" required>
+                    <br>
+                    <label for="new_password">New Password:</label>
+                    <input type="password" name="new_password" required>
+                    <br>
+                    <label for="confirm_password">Confirm New Password:</label>
+                    <input type="password" name="confirm_password" required>
+                    <br>
+                    <button type="submit">Change Password</button>
+                </form>
+                {% if password_message %}
+                    <p style="color:green;">{{ password_message }}</p>
+                {% endif %}
+            </section>
+            <section class="content" id="billing" style="display:none;">
+                <h2>Billing</h2>
+                <p>Billing information goes here.</p>
+            </section>
+            <section class="content" id="resume" style="display:none;">
+                <h2>Resume/Cover Letter</h2>
+                <form class="resume-upload-form" method="POST" action="{{ url_for('upload_resume') }}" enctype="multipart/form-data">
+                    <label for="resume">Upload Resume (PDF):</label>
+                    <input type="file" name="resume" id="resume" accept="application/pdf" required>
+                    <button type="submit">Upload Resume</button>
+                    <div class="resume-links">
+                        {% if user.resume_filename %}
+                            <a href="{{ url_for('view_resume', username=user.username) }}" target="_blank">View My Resume</a>
+                        {% else %}
+                            <p>No resume uploaded yet.</p>
+                        {% endif %}
+                    </div>
+                </form>
+                <form class="cover-upload-form" method="POST" enctype="multipart/form-data">
+                    <label for="cover">Upload Cover Letter (PDF):</label>
+                    <input type="file" name="cover" id="cover" accept="application/pdf">
+                    <button type="submit">Upload Cover Letter</button>
+                    <div class="cover-links">
+                        {% if user.cover_filename %}
+                            <a href="{{ url_for('view_cover', user_id=user.id) }}" target="_blank">View My Cover Letter</a>
+                        {% else %}
+                            <p>No cover letter uploaded yet.</p>
+                        {% endif %}
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+    <script>
+        // Simple JS to switch tabs
+        const links = document.querySelectorAll('.sidebar a');
+        const sections = document.querySelectorAll('.main-content section');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                links.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                sections.forEach(sec => sec.style.display = 'none');
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) target.style.display = 'block';
+            });
+        });
+        // Show first tab by default
+        sections[0].style.display = 'block';
+    </script>    
+</body>
+</html>

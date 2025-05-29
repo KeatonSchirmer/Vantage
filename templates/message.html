@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='message.css') }}">
+</head>
+<body>
+    <div class="nav">
+        <div class="brand">
+            <h1>InternMate</h1>
+        </div>
+        <div class="tabs">
+            <ul>
+                <li><a href="{{url_for('home') }}">Home</a></li> <!--Home-->
+                <li><a href="{{url_for('message') }}">Message</a></li> <!--Message-->
+                <li><a href="{{url_for('application') }}">Applications</a></li> <!--Applications-->
+                <li><a href="{{url_for('history') }}">History</a></li> <!--History-->
+            </ul>
+        </div>
+        <div class="profile">
+            <a href="{{url_for('profile') }}">    
+                <img src="{{ url_for('static', filename='profile_uploads/' + (user.profile_pic or 'profile blank.jpg')) }}" alt="Profile Picture">
+            </a>
+            <ul><li><a href="{{url_for('profile') }}">{{ user.username }}</a></li></ul>
+        </div>
+    </div>
+    <div class="container">
+        <div class="message-container">
+            <div class="conversation-list">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showMsgTab('user')">User Messages</button>
+                    <button class="tab-btn" onclick="showMsgTab('company')">Company Messages</button>
+                </div>
+                <div id="user-tab" class="tab-content" style="display:block;">
+                    <h4>User Conversations</h4>
+                    <ul>
+                        {% for u in user_conversations %}
+                            <li>
+                                <a href="{{ url_for('message', with=u.username) }}">{{ u.username }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if not user_conversations %}
+                            <li><em>No user conversations yet.</em></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div id="company-tab" class="tab-content" style="display:none;">
+                    <h4>Company Conversations</h4>
+                    <ul>
+                        {% for u in company_conversations %}
+                            <li>
+                                <a href="{{ url_for('message', with=u.username) }}">{{ u.username }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if not company_conversations %}
+                            <li><em>No company conversations yet.</em></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="chat-window">
+                {% if selected_user %}
+                    <h4>Chat with {{ selected_user.username }}</h4>
+                    <div class="messages">
+                        {% for msg in messages %}
+                            <div class="msg {% if msg.sender_id == user.id %}sent{% else %}received{% endif %}">
+                                <b>{{ msg.sender.username }}:</b> {{ msg.content }}
+                                <span class="timestamp">{{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <form method="POST">
+                        <input type="hidden" name="recipient" value="{{ selected_user.username }}">
+                        <textarea name="content" rows="2" required></textarea>
+                        <button type="submit">Send</button>
+                    </form>
+                {% else %}
+                    <p>Select a conversation to start chatting.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+    function showMsgTab(tab) {
+        document.getElementById('user-tab').style.display = (tab === 'user') ? 'block' : 'none';
+        document.getElementById('company-tab').style.display = (tab === 'company') ? 'block' : 'none';
+        var btns = document.getElementsByClassName('tab-btn');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].classList.remove('active');
+        }
+        if(tab === 'user') {
+            btns[0].classList.add('active');
+        } else {
+            btns[1].classList.add('active');
+        }
+    }
+    </script>
+</body>
+</html>

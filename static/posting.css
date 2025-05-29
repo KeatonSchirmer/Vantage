@@ -1,0 +1,145 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    margin-left: 220px; 
+}
+/*? Top bar */
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 220px;
+    background-color: #f8f9fa;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+.brand {
+    width: 100%;
+    text-align: center;
+    font-size: larger;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+.tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    font-size: 1.5rem;
+}
+.tabs ul{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.profile {
+    margin-top: auto;
+    font-size: 1.2rem;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 50px;
+}
+.profile img {
+    width: 80px;
+    border-radius: 50px;
+}
+a {
+    text-decoration: none;
+    font-weight: bolder;
+    color: #007bff;
+}
+a:hover {
+    color: #0056b3;
+}
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.result-card {
+    width: 100%;
+    max-width: 600px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 32px 36px 28px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: box-shadow 0.2s;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+.result-card:hover {
+    box-shadow: 0 4px 20px rgba(0,123,255,0.1);
+}
+
+.result-header h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.65rem;
+    color: #007bff;
+}
+
+.result-company {
+    font-weight: bold;
+    font-size: 1.35rem;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.result-meta {
+    color: #555;
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+}
+
+.result-location {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.result-snippet {
+    color: #444;
+    margin-bottom: 14px;
+    line-height: 1.6;
+    font-size: 1.15rem;
+}
+
+.result-link {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 8px;
+}
+
+.result-link:hover {
+    background: #0056b3;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* vertical centering */
+    min-height: 100vh;
+    margin-left: 220px; /* only if you're using a sidebar */
+    padding: 20px;
+    box-sizing: border-box;
+}

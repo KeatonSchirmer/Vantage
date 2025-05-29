@@ -1,0 +1,106 @@
+
+Timeline 
+
+    Stage 1
+        - Create the backend (Flask) and integrate crawler
+            - APIs for data handling and crawler intergration
+        - Design SQL schema (PostgreSQL) for data storage
+    Stage 2
+        - Create basic structure for web app (React.js)
+            - User authentication
+            - Profile page
+            - Search functionality
+            - Message system
+        - Implement pages and style web app (Tailwind CSS)
+        - Create mobile app (React Native) use components from web app
+    Stage 3
+        - Connect frontend and backend with APIs
+            - Test functionality
+        - Deploy app (figure it out later)
+        - Monitor performance 
+            - Fix bugs 
+            - Get feedback for better user experience
+
+TO DO LIST
+
+    Crawler
+    - Split the crawler into sections that will be used
+    - Custom API function 1 is to automatically search for preset search using data from user 
+    - Custom API function 2 is to give a search bar for specific search that user may want to find (Can only search for things that have to do with internship information)
+    - Predetermined crawler should automatically search every several hours
+
+    Database
+    - Create database for users
+    - Create database for the crawler
+
+    User
+    - Route for user
+    - Fetch user data from database
+    - Create html template using placeholders for specific user information
+    - Render template (jinja)
+
+    Search
+    - Connect search bar to database and custom API
+    - Create optional filters (date, location, etc.)
+    - Create the automation button
+    - Results should be automatically filtered by date posted
+    - Each result should have a individual page that gives more information and has the apply button and company page link
+
+    Message
+    - Determine how messages should work (unique message board, or connect to email)
+
+    History
+    - Unique to user
+    - Search results history
+
+    Application Progress
+    - Table showing progress of application (reviewing, rejected, interview, offered)
+    - Figure out how to actually apply programmically 
+
+
+CURRENT TO DO LIST 5-25-2025
+
+    - Update Crawler and Custom API code to find more detailed information
+        - Position
+        - Company 
+        - Location
+        - Post Date 
+        - Qualifications
+        - Preferences (if available)
+
+    - Update DB to only save internships thats been applied for or saved manually with save button
+
+    - Cache search results for an hour and not saved to DB
+
+    - Have search function do a primary search for roughly 15-20 results for quicker results
+    then have a secondary search conducted to find the next set of results run in the background for next page via pagination
+
+    - Update search filters to actually filter results
+
+    - Create application feature
+        - Automation 
+        - Anti-Captcha
+        - Resume optimization
+        - Cover letter optimization/creation
+        - Progress tracker
+    
+    - Create message feature (Essentially what LinkedIn does)
+        - Company connection board to message companies that have moved on to the interview process of application 
+        requires companies to also work with us to make this possible (may need to be a future update)
+        - User connection board to message other people to improve chances of getting an internship
+        
+    - Create billing function
+
+    - Secure user input data
+        - Passwords
+        - Address
+        - Billing Information 
+        - Contact Information
+
+5-28-2025 TO DO LIST
+    
+    - Resume and cover letter creation/optimization
+
+    - Job filtering based on resume
+
+    - Application automation/tracker

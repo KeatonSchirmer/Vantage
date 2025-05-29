@@ -1,0 +1,213 @@
+body{
+    margin-left: 220px; 
+}
+/*? Top bar */
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 220px;
+    background-color: #f8f9fa;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+.brand {
+    width: 100%;
+    text-align: center;
+    font-size: larger;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+.tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    font-size: 1.5rem;
+}
+.tabs ul{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.profile {
+    margin-top: auto;
+    font-size: 1.2rem;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 50px;
+}
+.profile img {
+    width: 80px;
+    border-radius: 50px;
+}
+a {
+    text-decoration: none;
+    font-weight: bolder;
+    color: #007bff;
+}
+a:hover {
+    color: #0056b3;
+}
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.message-container {
+    display: flex;
+    gap: 32px;
+    margin: 40px auto;
+    max-width: 900px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 32px 24px;
+}
+.conversation-list {
+    width: 200px;
+    border-right: 1px solid #e3eaf2;
+    padding-right: 18px;
+}
+.conversation-list h4 {
+    margin-bottom: 12px;
+    color: #2d3a4b;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.conversation-list ul li {
+    margin-bottom: 12px;
+}
+.conversation-list a {
+    color: #2d3a4b;
+    font-weight: 500;
+    font-size: 1rem;
+}
+.conversation-list a:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.chat-window h4 {
+    margin-bottom: 10px;
+    color: #2d3a4b;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.messages {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.msg {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: inline-block;
+    max-width: 70%;
+    word-break: break-word;
+    position: relative;
+}
+.msg.sent {
+    background: #e3eaf2;
+    color: #2d3a4b;
+    margin-left: auto;
+    text-align: right;
+}
+.msg.received {
+    background: #eaf3fb;
+    color: #3a4a5d;
+    margin-right: auto;
+    text-align: left;
+}
+.timestamp {
+    font-size: 0.8em;
+    color: #888;
+    margin-left: 8px;
+    display: block;
+    margin-top: 2px;
+    text-align: right;
+}
+form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+form textarea {
+    flex: 1;
+    border-radius: 6px;
+    border: 1px solid #d1dbe8;
+    padding: 8px;
+    font-size: 1rem;
+    resize: vertical;
+}
+form button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+form button:hover {
+    background: #0056b3;
+}
+.tab-buttons {
+    margin-bottom: 18px;
+}
+.tab-btn {
+    background: #fff;
+    border: none;
+    padding: 10px 28px;
+    margin-right: 8px;
+    border-radius: 6px 6px 0 0;
+    font-weight: 600;
+    color: #2d3a4b;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.tab-btn.active, .tab-btn:hover {
+    background: #e2e6ea;
+    border-bottom: 2px solid #2d3a4b;
+}
+.tab-content {
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    padding: 0 0 18px 0;
+}
+
+@media (max-width: 900px) {
+    .message-container {
+        flex-direction: column;
+        padding: 16px 4px;
+    }
+    .conversation-list {
+        border-right: none;
+        border-bottom: 1px solid #e3eaf2;
+        padding-right: 0;
+        padding-bottom: 18px;
+        width: 100%;
+    }
+}

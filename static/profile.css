@@ -1,0 +1,223 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+a{
+    text-decoration: none;
+    font-weight: bolder;
+    color: #007bff;   
+}
+a:hover{
+    color: #0056b3;
+}
+.home-btn {
+    position: fixed;
+    top: 24px;
+    right: 32px;
+    background: #007bff;
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s;
+    z-index: 1000;
+}
+.home-btn:hover {
+    background: #0056b3;
+    color: #e2e6ea;
+}
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+.sidebar {
+    width: 220px;
+    background: #f8f9fa;
+    padding: 40px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.03);
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar li {
+    margin: 20px 0;
+}
+.sidebar a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    padding: 12px 24px;
+    display: block;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+.sidebar a.active,
+.sidebar a:hover {
+    background: #e2e6ea;
+}
+.main-content {
+    flex: 1;
+    padding: 40px;
+}
+.content{
+    font-size: large;
+    padding: 30px;
+}
+#edit-profile img{
+    width: 75px;
+}
+/* Resume/Cover Letter Section Styles */
+#resume.content {
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-width: 500px;
+    margin: 0 auto;
+    margin-top: 30px;
+    padding: 32px 36px 28px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#resume h2 {
+    color: #007bff;
+    margin-bottom: 24px;
+}
+
+.resume-upload-form,
+.cover-upload-form {
+    width: 100%;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.resume-upload-form input[type="file"],
+.cover-upload-form input[type="file"] {
+    margin-bottom: 12px;
+}
+
+.resume-upload-form button,
+.cover-upload-form button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 28px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+}
+
+.resume-upload-form button:hover,
+.cover-upload-form button:hover {
+    background: #0056b3;
+}
+
+.resume-links,
+.cover-links {
+    margin-top: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.resume-links a,
+.cover-links a {
+    color: #007bff;
+    font-weight: bold;
+    margin-right: 18px;
+}
+
+.resume-links p,
+.cover-links p {
+    color: #888;
+    margin: 0;
+}
+.main-content .content {
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-width: 500px;
+    margin: 0 auto;
+    margin-top: 30px;
+    padding: 32px 36px 28px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main-content .content h2 {
+    color: #007bff;
+    margin-bottom: 24px;
+}
+
+.main-content .content form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.main-content .content label {
+    font-weight: bold;
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+.main-content .content input[type="text"],
+.main-content .content input[type="email"],
+.main-content .content input[type="password"] {
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.main-content .content button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 28px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.2s;
+}
+
+.main-content .content button:hover {
+    background: #0056b3;
+}
+
+.main-content .content a {
+    color: #007bff;
+    font-weight: bold;
+    margin-top: 18px;
+    text-decoration: none;
+}
+
+.main-content .content a:hover {
+    text-decoration: underline;
+}
+
+.main-content .content p {
+    margin: 8px 0;
+    color: #333;
+}
+.label-bold {
+    font-weight: bold;
+    color: #222;
+}

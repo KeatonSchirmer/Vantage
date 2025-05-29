@@ -1,0 +1,99 @@
+.form-container {
+    display: none;
+}
+.form-container.active{
+    display: block;
+}
+
+.header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: auto;
+    background-color: #f8f9fa;
+    color: #333;
+}
+.title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    margin: auto;
+    font-size: larger;
+    color: #007bff;
+    padding-left: 255px;
+}
+.home{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: x-large;
+    width: 20%;
+}
+ul{
+    text-decoration: none;
+    list-style-type: none;
+}
+a{
+    text-decoration: none;
+    font-weight: bolder;
+    color: #007bff;
+}
+a:hover{
+    color: #0056b3;
+}
+.logreg_button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 15px;
+}
+.logreg_button button{
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: 25px; 
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.forms{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    margin: auto;
+    padding: 40px 0;
+    width: 100%;
+}
+.forms form {
+    width: 400px;         /* Set a larger width for the form */
+    padding: 40px 30px;   /* Add more internal space */
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.forms input[type="text"],
+.forms input[type="password"],
+.forms input[type="email"] {
+    font-size: 1.2rem;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+.forms button {
+    font-size: 1.1rem;
+    padding: 15px 0;
+    border-radius: 10px;
+}
+.error{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    font-size: large;
+}

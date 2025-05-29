@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='history.css') }}">
+</head>
+<body>
+    <div class="nav">
+        <div class="brand">
+            <h1>InternMate</h1>
+        </div>
+        <div class="tabs">
+            <ul>
+                <li><a href="{{url_for('home') }}">Home</a></li> <!--Home-->
+                <li><a href="{{url_for('message') }}">Message</a></li> <!--Message-->
+                <li><a href="{{url_for('application') }}">Applications</a></li> <!--Applications-->
+                <li><a href="{{url_for('history') }}">History</a></li> <!--History-->
+            </ul>
+        </div>
+        <div class="profile">
+            <a href="{{url_for('profile') }}">    
+                <img src="{{ url_for('static', filename='profile_uploads/' + (user.profile_pic or 'profile blank.jpg')) }}" alt="Profile Picture">
+            </a>
+            <ul><li><a href="{{url_for('profile') }}">{{ user.username }}</a></li></ul>
+        </div>
+    </div>
+</body>
+</html>

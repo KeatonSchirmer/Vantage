@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='search.css') }}">
+</head>
+<body>
+    <div class="nav">
+        <div class="brand">
+            <h1>InternMate</h1>
+        </div>
+        <div class="tabs">
+            <ul>
+                <li><a href="{{url_for('home') }}">Home</a></li>
+                <li><a href="{{url_for('message') }}">Message</a></li>
+                <li><a href="{{url_for('application') }}">Applications</a></li>
+                <li><a href="{{url_for('history') }}">History</a></li>
+            </ul>
+        </div>
+        <div class="profile">
+            <a href="{{url_for('profile') }}">
+                <img src="{{ url_for('static', filename='profile_uploads/' + (user.profile_pic or 'profile blank.jpg')) }}" alt="Profile Picture">
+            </a>
+            <ul><li><a href="{{url_for('profile') }}">{{ user.username }}</a></li></ul>
+            {% if 'user_id' not in session %}<ul><li><a href="{{url_for('login') }}">Login/Register</a></li></ul>{% endif %}
+        </div>
+    </div>
+    <div class="search-bar-wrapper">
+        <div class="search_bar">
+            <form method="POST" action="{{ url_for('search') }}" class="search-bar-form">
+                <input type="text" name="query" placeholder="Search...">
+                <button type="submit" id="search-button">Search</button> <!--! Search button should take user to the search page and show the results-->
+            </form>
+        </div>
+            <div class="filter-btn-row">
+                <div class="filter-dropdown" id="filterDropdown">
+                    <button type="button" class="filter-btn" onclick="toggleFilterDropdown()">Filter Categories</button>
+                    <div class="filter-dropdown-content">
+                        <form id="filterForm" method="get" action="{{ url_for('search') }}">
+                            <input type="hidden" name="query" value="{{ query }}">
+                            <label><input type="checkbox" name="show_db" value="1" {% if show_db %}checked{% endif %}> Database Results</label>
+                            <label><input type="checkbox" name="show_companies" value="1" {% if show_companies %}checked{% endif %}> Companies</label>
+                            <label><input type="checkbox" name="show_requirements" value="1" {% if show_requirements %}checked{% endif %}> Requirements</label>
+                            <label><input type="checkbox" name="show_ideal" value="1" {% if show_ideal %}checked{% endif %}> Ideal Path</label>
+                            <button type="submit" class="filter-btn" style="margin-top:10px;">Apply</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </div>    
+    <div class="container">
+        <h2 class="result-header">Search Results for "{{ query }}"</h2>
+        <div class="results-container">
+            <ul class="results-list">
+                {% for result in db_results %}
+                    <li class="result-card">
+                        <a href="{{ url_for('posting', result_id=result.id) }}">
+                        <h3>{{ result.job }}</h3>
+                        </a>
+                        <p>{{ result.company }} - {{ result.location }}</p>
+                        <p>{{ result.snippet }}</p>
+                        <a class="result-link" href="{{ url_for('posting', result_id=result.id) }}">View More</a>
+                    </li>
+                {% endfor %}
+
+
+                {% for result in google_results %}
+                    <li class="result-card">
+                        <h3>{{ result.title }}</h3>
+                        <p>{{ result.snippet }}</p>
+                        <a class="result-link" href="{{ result.link }}" target="_blank">View Original</a>
+                        <a class="result-link" href="{{ url_for('google_posting', result_index=loop.index0, query=query, page=page, show_db=show_db, show_companies=show_companies, show_requirements=show_requirements, show_ideal=show_ideal) }}">View Posting</a>
+                    </li>
+                {% endfor %}
+
+                {% for result in linkedin_results %}
+                    <li class="result-card">
+                        <h3>{{ result.title }}</h3>
+                        <p>{{ result.company }} - {{ result.location }}</p>
+                        <a class="result-link" href="{{ result.link }}" target="_blank">View on LinkedIn</a>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+        <div class="container mt-4">
+            <nav aria-label="Search results pages">
+                <ul class="pagination flex-wrap">
+                    {% if pagination %}
+                        {% if pagination.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('search', page=pagination.prev_num, query=query) }}">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                        {% endif %}
+
+                        {% for p in pagination.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+                            {% if p %}
+                                <li class="page-item {% if p == page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('search', page=p, query=query) }}">{{ p }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if pagination.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('search', page=pagination.next_num, query=query) }}">Next</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Next</span></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    <script>
+        function toggleFilterDropdown() {
+            document.getElementById('filterDropdown').classList.toggle('show');
+        }
+        window.onclick = function(event) {
+            if (!event.target.matches('.filter-btn')) {
+                var dropdowns = document.getElementsByClassName("filter-dropdown");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Progress</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='application.css') }}">
+</head>
+<body>
+    <div class="nav">
+        <div class="brand">
+            <h1>InternMate</h1>
+        </div>
+        <div class="tabs">
+            <ul>
+                <li><a href="{{url_for('home') }}">Home</a></li> <!--Home-->
+                <li><a href="{{url_for('message') }}">Message</a></li> <!--Message-->
+                <li><a href="{{url_for('application') }}">Applications</a></li> <!--Applications-->
+                <li><a href="{{url_for('history') }}">History</a></li> <!--History-->
+            </ul>
+        </div>
+        <div class="profile">
+            <a href="{{url_for('profile') }}">    
+                <img src="{{ url_for('static', filename='profile_uploads/' + (user.profile_pic or 'profile blank.jpg')) }}" alt="Profile Picture">
+            </a>
+            <ul><li><a href="{{url_for('profile') }}">{{ user.username }}</a></li></ul>
+        </div>
+    </div>
+    <div class="container">
+        <h2>My Applications</h2>
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('active')">Active</button>
+            <button class="tab-btn" onclick="showTab('inactive')">Inactive</button>
+        </div>
+        <div id="active" class="tab-content" style="display:block;">
+            {% if active_apps %}
+            <table>
+                <tr>
+                    <th>Job</th>
+                    <th>Company</th>
+                    <th>Status</th>
+                    <th>Date Applied</th>
+                    <th>Notes</th>
+                </tr>
+                {% for app in active_apps %}
+                <tr>
+                    <td>{{ app.job.job }}</td>
+                    <td>{{ app.job.company }}</td>
+                    <td>{{ app.status }}</td>
+                    <td>{{ app.applied_at.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ app.notes or '' }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="empty-msg">You have not applied to any internships yet. Start applying to track your progress!</p>
+            {% endif %}
+        </div>
+        <div id="inactive" class="tab-content" style="display:none;">
+            {% if inactive_apps %}
+            <table>
+                <tr>
+                    <th>Job</th>
+                    <th>Company</th>
+                    <th>Status</th>
+                    <th>Date Applied</th>
+                    <th>Notes</th>
+                </tr>
+                {% for app in inactive_apps %}
+                <tr>
+                    <td>{{ app.job.job }}</td>
+                    <td>{{ app.job.company }}</td>
+                    <td>{{ app.status }}</td>
+                    <td>{{ app.applied_at.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ app.notes or '' }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="empty-msg">No inactive applications yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+    function showTab(tab) {
+        document.getElementById('active').style.display = (tab === 'active') ? 'block' : 'none';
+        document.getElementById('inactive').style.display = (tab === 'inactive') ? 'block' : 'none';
+        var btns = document.getElementsByClassName('tab-btn');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].classList.remove('active');
+        }
+        if(tab === 'active') {
+            btns[0].classList.add('active');
+        } else {
+            btns[1].classList.add('active');
+        }
+    }
+    </script>
+</body>
+</html>

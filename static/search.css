@@ -1,0 +1,404 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    margin-left: 220px; 
+}
+/*? Top bar */
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 220px;
+    background-color: #f8f9fa;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+.brand {
+    width: 100%;
+    text-align: center;
+    font-size: larger;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+.tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    font-size: 1.5rem;
+}
+.tabs ul{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.profile {
+    margin-top: auto;
+    font-size: 1.2rem;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 50px;
+}
+.profile img {
+    width: 80px;
+    border-radius: 50px;
+}
+a {
+    text-decoration: none;
+    font-weight: bolder;
+    color: #007bff;
+}
+a:hover {
+    color: #0056b3;
+}
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+/*? Search bar */
+.search_bar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: x-large;
+    width: 100%;
+    margin: auto;
+    padding-top: 15px;
+}
+.search_bar input[type="text"] {
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    border-radius: 25px;      /* Makes the corners round */
+    border: 1px solid #ccc;
+    outline: none;
+    width: 350px;             /* Makes the box bigger */
+    margin-right: 10px;
+    box-sizing: border-box;
+}
+.search_bar button {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: 25px;      /* Makes the button round */
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.search_bar button:hover {
+    background-color: #0056b3;
+}
+/* Center the whole search bar and filter button vertically */
+.search-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+/* Make the filter button row centered and with less margin */
+.filter-btn-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 8px;
+    padding-left: 350px;
+}
+/* Make the filter button smaller */
+.filter-btn {
+    padding: 6px 16px;
+    font-size: 0.95rem;
+    border-radius: 25px;
+    margin-left: 0;
+    margin-top: 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+/* Container for the whole search area */
+.container {
+    display: block;
+    max-width: 1000px;
+    margin: 40px auto 0 auto;
+    padding: 0 16px;
+}
+/* Search bar and filter area */
+.search-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 32px;
+}
+.search-bar-row form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.search-bar-row input[type="text"] {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1.1rem;
+    width: 320px;
+}
+.search-bar-row button,
+.filter-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 8px;
+}
+.search-bar-row button:hover,
+.filter-btn:hover {
+    background: #0056b3;
+}
+/* Filter dropdown */
+.filter-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.filter-dropdown-content {
+    display: none;
+    position: absolute;
+    background: #fff;
+    min-width: 180px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    border-radius: 8px;
+    z-index: 10;
+    right: 0;
+    padding: 12px 0;
+}
+.filter-dropdown.show .filter-dropdown-content {
+    display: block;
+}
+
+.filter-dropdown-content label {
+    display: block;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.filter-dropdown-content label:hover {
+    background: #f0f0f0;
+}
+.result-header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 150px;
+}
+/* Category Headings */
+.category-heading {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #222;
+    margin: 36px 0 18px 0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-left: 6px solid #007bff;
+    padding-left: 16px;
+    background: #f8f9fa;
+}
+/* Results List */
+.results-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;           
+    width: 100%;
+    margin: 0 auto 24px auto;
+    padding: 0;
+    list-style: none;
+}
+.results-list ul{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    width: 100%;
+    justify-content: center;
+}
+/* Result Card */
+.result-card {
+    width: 100%;
+    max-width: 700px;   
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.09);
+    padding: 26px 22px 20px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0;
+    transition: box-shadow 0.2s;
+    box-sizing: border-box;
+}
+.result-card li{
+    flex: 0 1 300px;
+    margin: 10px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: #333;
+    box-sizing: border-box;    
+}
+.result-card:hover {
+    box-shadow: 0 4px 20px rgba(0,123,255,0.13);
+}
+
+.result-header h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.15rem;
+    color: #007bff;
+}
+
+.result-company {
+    font-weight: bold;
+    color: #333;
+}
+
+.result-meta {
+    margin-bottom: 12px;
+    color: #555;
+    font-size: 0.98rem;
+}
+
+.result-location {
+    font-style: italic;
+}
+
+.result-snippet {
+    color: #444;
+    margin-bottom: 10px;
+}
+
+.result-link {
+    margin-top: 10px;
+    align-self: flex-start;
+    background: #007bff;
+    color: #fff !important;
+    padding: 8px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.result-link:hover {
+    background: #0056b3;
+}
+
+/* Pagination styling */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.page-item {
+  flex: 0 0 auto;
+}
+
+.page-item a, .page-item span {
+  display: block;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #f0f0f0;
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.page-item a:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+.page-item.active a,
+.page-item .current {
+  background: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Filter */
+.filter-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.filter-btn:hover {
+    background: #0056b3;
+}
+
+.filter-dropdown-content {
+    display: none;
+    position: absolute;
+    background: #fff;
+    min-width: 200px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+    border-radius: 10px;
+    z-index: 10;
+    right: 0;
+    padding: 16px 0;
+}
+
+.filter-dropdown.show .filter-dropdown-content {
+    display: block;
+}
+
+.filter-dropdown-content label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #222;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+.filter-dropdown-content label:hover {
+    background: #f0f0f0;
+}
+
+.filter-dropdown-content input[type="checkbox"] {
+    accent-color: #007bff;
+    width: 18px;
+    height: 18px;
+}

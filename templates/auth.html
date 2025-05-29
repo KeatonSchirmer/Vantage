@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login or Register</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='auth.css')}}">
+    <script>
+        function showForm(formId) {
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('register-form').classList.remove('active');
+            document.getElementById(formId).classList.add('active');
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="title">
+            <h1>Login or Register</h1>            
+        </div>
+        <div class="home">
+            <ul><li><a href="{{url_for('home') }}">Home</a></li></ul>
+        </div>
+    </div>
+    <div class="logreg_button">
+        <button onclick="showForm('login-form')">Login</button>
+        <button onclick="showForm('register-form')">Register</button>
+    </div>
+
+    <div class="forms">
+        <div id="login-form" class="form-container {% if form_type == 'login' %}active{% endif %}">
+            <form method="POST">
+                <input type="hidden" name="form_type" value="login">
+                <h2>Login</h2>
+                <label>Username:</label>
+                <input type="text" name="username" required>
+                <br>
+                <label>Password: </label>
+                <input type="password" name="password" required>
+                <br>
+                <button type="submit">Login</button>
+            </form>
+            <p>
+                <a href="{{ url_for('forgot_password') }}">Forgot/Change Password?</a>
+            </p>            
+        </div>
+
+        <div id="register-form" class="form-container {% if form_type == 'register' %}active{% endif %}">
+            <form method="POST">
+                <input type="hidden" name="form_type" value="register">
+                <h2>Register</h2>
+                <label>First Name:</label>
+                <input type="text" name="first_name" required>
+                <br>
+                <label>Last Name:</label>
+                <input type="text" name="last_name" required>
+                <br>
+                <label>Email:</label>
+                <input type="email" name="email" required> 
+                <label>Degree:</label>
+                <input type="text" name="degree" required>
+                <br>
+                <label>Address:</label>
+                <input type="text" name="address" required>
+                <br>              
+                <label>Username: </label>
+                <input type="text" name="username" required>
+                <br>
+                <label>Password: </label>
+                <input type="password" name="password" required>
+                <br>
+                <button type="submit">Register</button>
+                </form>
+        </div>
+    </div>
+
+    <div class="error">
+        {% if error %}
+            <p style ="color: red;">{{ error }}</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

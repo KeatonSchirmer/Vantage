@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App (User Version)</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='sihome.css') }}">
+</head>
+<body>
+    <div class="nav">
+        <div class="brand">
+            <h1>InternMate</h1>
+        </div>
+        <div class="tabs">
+            <ul>
+                <li><a href="{{url_for('home') }}">Home</a></li> <!--Home-->
+                <li><a href="{{url_for('message') }}">Message</a></li> <!--Message-->
+                <li><a href="{{url_for('application') }}">Applications</a></li> <!--Applications-->
+                <li><a href="{{url_for('history') }}">History</a></li> <!--History-->
+            </ul>
+        </div>
+        <div class="profile">
+            <a href="{{url_for('profile') }}">    
+                <img src="{{ url_for('static', filename='profile_uploads/' + (user.profile_pic or 'profile blank.jpg')) }}" alt="Profile Picture">
+            </a>
+            <ul><li><a href="{{url_for('profile') }}">{{ user.username }}</a></li></ul>
+        </div>
+    </div>
+    <div class="search_bar">
+        <form method="POST" action="{{ url_for('search') }}">
+            <input type="text" name="query" placeholder="Search...">
+            <button type="submit">Search</button> <!--! Search button should take user to the search page and show the results-->
+        </form>
+    </div>
+    <div class="application-outer">
+        <div class="application">
+        <h3 style="margin-bottom: 12px;">Recent Applications</h3>
+        {% if mini_apps %}
+        <table class="mini-app-table">
+            <tr>
+                <th>Job</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+            {% for app in mini_apps %}
+            <tr>
+                <td>{{ app.job.job }}</td>
+                <td>{{ app.status }}</td>
+                <td>{{ app.applied_at.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="{{ url_for('application') }}" class="mini-app-link">View all applications &rarr;</a>
+        {% else %}
+        <p class="mini-app-empty">You haven't applied to any internships yet.</p>
+        {% endif %}
+        </div>
+    </div>
+</body>
+</html>
