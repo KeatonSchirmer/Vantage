@@ -12,11 +12,13 @@ import os
 from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image, ImageDraw
+from sqlalchemy.orm import joinedload
 
 
 
 #* App
 app = Flask(__name__)
+user = User.query.options(joinedload(User.applications)).get(session['user_id'])
 
 #* DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_v76t_user:btcqKvJJQKOB2JYNo7fHkNrl3FpSuNp5@dpg-d0rv1di4d50c73b3drb0-a/user_v76t'
