@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ posting.title or posting.job }}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/Logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='linkedin_posting.css') }}">
+</head>
+<body>
+    <div class="nav">
+        <div class="brand">
+            <h1>Vantage</h1>
+        </div>
+        <div class="tabs">
+            <ul>
+                <li><a href="{{url_for('home') }}">Home</a></li>
+                <li><a href="{{url_for('message') }}">Message</a></li>
+                <li><a href="{{url_for('application') }}">Applications</a></li>
+                <li><a href="{{url_for('history') }}">History</a></li>
+            </ul>
+        </div>
+        <div class="profile">
+            <a href="{{url_for('profile') }}">
+                <img src="{{ url_for('static', filename='profile_uploads/' + (user.profile_pic or 'profile blank.jpg')) }}" alt="Profile Picture">
+            </a>
+            <ul><li><a href="{{url_for('profile') }}">{{ user.username }}</a></li></ul>
+            {% if 'user_id' not in session %}<ul><li><a href="{{url_for('login') }}">Login/Register</a></li></ul>{% endif %}
+        </div>
+    </div>        
+    <div class="container">
+        <div class="result-card">
+            <div class="result-header">
+               <h2>{{ posting.title or posting.job }}</h2> 
+            </div>
+            <p><strong>Company:</strong> {{ posting.company }}</p>
+            <p><strong>Location:</strong> {{ posting.location }}</p> 
+            
+            <div class="result-snippet">
+                <strong>Description:</strong> 
+                <p>{{ posting.description or 'No description available.' }}</p>
+            </div>
+            <div class="result-snippet">
+                <strong>Requirements:</strong> 
+                <p>{{ posting.requirements or 'No requirements listed.' }}</p>
+            </div>
+            <div class="result-snippet">
+                <strong>Ideal Candidate:</strong> 
+                <p>{{ posting.ideal or 'No ideal candidate description available.' }}</p>
+            </div>
+            
+            <form action="{{ url_for('apply_linkedin') }}" method="post">
+                <input type="hidden" name="title" value="{{ posting.title or posting.job }}">
+                <input type="hidden" name="company" value="{{ posting.company }}">
+                <input type="hidden" name="location" value="{{ posting.location }}">
+                <input type="hidden" name="description" value="{{ posting.description or '' }}">
+                <input type="hidden" name="url" value="{{ posting.link or posting.url }}">
+                <div class="button-stack">
+                    <a href="{{ posting.link or posting.url }}" target="_blank" class="result-link">View Original</a>
+                    <button type="submit" class="result-link">Apply</button>       
+                    <a href="{{ url_for('search', 
+                        query=prev_query, 
+                        page=page, 
+                        show_db=show_db, 
+                        show_companies=show_companies, 
+                        show_requirements=show_requirements, 
+                        show_ideal=show_ideal
+                    ) }}" class="result-link">← Back to Search Results</a>
+                </div>
+            </form>
+        </div>
+    </form>
+</body>
+</html>

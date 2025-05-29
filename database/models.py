@@ -10,6 +10,8 @@ class SearchResult(db.Model):
     description = db.Column(db.Text)
     url = db.Column(db.String(350))
     posted = db.Column(db.String(50))
+    requirements = db.Column(db.Text)
+    ideal_path = db.Column(db.Text)
 
 def save_results_to_db(results):
     for result in results:

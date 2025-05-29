@@ -43,9 +43,10 @@ mail = Mail(app)
 s = URLSafeTimedSerializer(app.secret_key)
 
 #* Profile Pic
-PROFILE_PIC = 'ifro/static/profile_uploads'
+PROFILE_PIC = 'vantage/static/profile_uploads'
 os.makedirs('static/profile_uploads', exist_ok=True)
 app.config['PROFILE_PIC'] = PROFILE_PIC
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'profile_uploads')
 
 #* Scheduler
 scheduler = BackgroundScheduler()
@@ -82,6 +83,7 @@ def circular_crop(image_path):
 
     output_filename = f"{uuid.uuid4().hex}.png"
     output_path = os.path.join(app.config['PROFILE_PIC'], output_filename)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     cropped_img.save(output_path)
     return output_filename
 
@@ -102,7 +104,7 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET'])
 def home():
-    results = SearchResult.query.order_by(SearchResult.id.desc()).limit(24).all() #! Should update everytime the crawler is automatically used
+    results = SearchResult.query.order_by(SearchResult.id.desc()).limit(15).all() #! Should update everytime the crawler is automatically used
     user = None
     if 'user_id' not in session:
         return render_template('sohome.html', results=results, user=user)
@@ -261,15 +263,16 @@ def edit_profile():
             file = request.files['profile_pic']
             if file and file.filename != '':
                 filename = secure_filename(file.filename)
-                original_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{uuid.uuid4().hex}_{filename}")
-                file.save(original_path)
+                temp_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{uuid.uuid4().hex}_{filename}")
+                file.save(temp_path)
 
-                cropped_filename = circular_crop(original_path)
+                cropped_filename = circular_crop(temp_path)
                 user.profile_pic = cropped_filename
-                
 
-                cropped_filename = circular_crop(original_path)
-                user.profile_pic = cropped_filename
+                try:
+                    os.remove(temp_path)
+                except Exception:
+                        pass
 
         db.session.commit()
         edit_message = "Profile updated successfully."
@@ -336,13 +339,13 @@ def view_resume(username):
             app.config['RESUME_FOLDER'],
             user.resume_filename,
             as_attachment=False)
+
 #* Search
     
     #! Cache search results for set time
     #! Add location search feature
-    #! Save to database only if user applies to the job
+    #! Save to database only if user applies to the job (save to application table)
 
-    #! Possibly stop searching DB and only use Google API and just save the results to the database
     #! Fix filter dropdown closing before applying selection
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -364,59 +367,9 @@ def search():
     force_refresh = request.values.get('refresh', '0') == '1'
     cache_key = f"search:{query}:{page}:{show_db}:{show_companies}:{show_requirements}:{show_ideal}"
 
-    if query and not force_refresh:
-        cached = cache.get(cache_key)
-        if cached:
-            return render_template(
-                'search.html',
-                db_results=cached['db_results'],
-                google_results=cached['google_results'],
-                query=query,
-                user=User.query.get(session['user_id']) if 'user_id' in session else None,
-                page=page,
-                total_db_results=cached['total_db_results'],
-                per_page=per_page,
-                pagination=cached.get('pagination', None),
-                show_db=show_db,
-                show_companies=show_companies,
-                show_requirements=show_requirements,
-                show_ideal=show_ideal
-            )
-
-    query_filter = (SearchResult.job.ilike(f"%{query}%")) | \
-                   (SearchResult.company.ilike(f"%{query}%")) | \
-                   (SearchResult.location.ilike(f"%{query}%"))
-
-    q = SearchResult.query.filter(query_filter)
-
-    if not show_companies:
-        q = q.filter(SearchResult.company == None)  # or some condition to exclude companies
-
-    if not show_requirements:
-        # Add condition to exclude by requirements
-        pass  # you must define logic here
-
-    if not show_ideal:
-        # Add condition to exclude by ideal path
-        pass  # define logic as needed
-
-    if not show_db:
-        pagination = None
-        db_results = []
-        total_db_results = 0
-    else:
-        pagination = q.distinct().paginate(page=page, per_page=per_page, error_out=False)
-        db_results = pagination.items
-        total_db_results = pagination.total
-
-    linked_results = []
-    if query:
-        linked_results = TemporaryScraper.temporary_search(query)
-
-        
-
+    linked_results = TemporaryScraper.temporary_search(query) if query else []
     google_results = GoogleScraper.search_api(
-        user_query= (f"{query} 'internship'"),
+        user_query=f"{query} internship",
         total_results=per_page,
         params={
             'key': 'AIzaSyB4m72GwM1JZRE6axO2b7DHIGyK_DaFBc4',
@@ -427,7 +380,7 @@ def search():
         url='https://customsearch.googleapis.com/customsearch/v1',
         ignore_keywords=['linkedin', 'indeed', 'wikipedia'],
         results_per_page=per_page
-    )
+    ) if query else []
 
     seen_links = set()
     unique_google_results = []
@@ -437,7 +390,58 @@ def search():
             continue
         seen_links.add(link)
         unique_google_results.append(result)
-    google_results = unique_google_results
+    google_results = unique_google_results    
+
+    db_results = []
+    total_db_results = 0
+    pagination = None
+    if show_db and query:
+        query_filter = (SearchResult.job.ilike(f"%{query}%")) | \
+                    (SearchResult.company.ilike(f"%{query}%")) | \
+                    (SearchResult.location.ilike(f"%{query}%"))
+
+        q = SearchResult.query.filter(query_filter)
+
+        if not show_companies:
+            q = q.filter((SearchResult.company == None) | (SearchResult.company == ""))
+
+        if show_requirements:
+            q = q.filter(SearchResult.requirements != None).filter(SearchResult.requirements != "")
+
+        if show_ideal:
+            q = q.filter(SearchResult.ideal_path != None).filter(SearchResult.ideal_path != "")
+       
+        pagination = q.distinct().paginate(page=page, per_page=per_page, error_out=False)
+        db_results = pagination.items
+        total_db_results = pagination.total
+
+    # Cache results
+    cache.set(cache_key, {
+        'db_results': [serialize_result(r) for r in db_results],
+        'google_results': google_results,
+        'linked_results': linked_results,
+        'total_db_results': total_db_results,
+    })
+
+    return render_template(
+        'search.html',
+        db_results=db_results,
+        google_results=google_results,
+        linked_results=linked_results,
+        query=query,
+        user=User.query.get(session['user_id']) if 'user_id' in session else None,
+        page=page,
+        total_db_results=total_db_results,
+        per_page=per_page,
+        pagination=pagination,
+        show_db=show_db,
+        show_companies=show_companies,
+        show_requirements=show_requirements,
+        show_ideal=show_ideal
+    )
+    linked_results = []
+    if query:
+        linked_results = TemporaryScraper.temporary_search(query)
 
     unique_results = []
     seen = set()
@@ -460,39 +464,18 @@ def search():
             'url': getattr(result, 'url', None),
         }
 
-    # Cache results
-    cache.set(cache_key, {
-        'db_results': [serialize_result(r) for r in db_results],
-        'google_results': google_results,
-        'total_db_results': total_db_results,
-    })
+
 
     return render_template(
         'search.html',
-        db_results=db_results,
-        google_results=google_results,
-        linked_results=linked_results,
-        query=query,
-        user=User.query.get(session['user_id']) if 'user_id' in session else None,
-        page=page,
-        total_db_results=total_db_results,
-        per_page=per_page,
-        pagination=pagination,
-        show_db=show_db,
-        show_companies=show_companies,
-        show_requirements=show_requirements,
-        show_ideal=show_ideal
     )    
-
 
 @app.route('/posting/<int:result_id>')
 def posting(result_id):
     user = User.query.get(session['user_id']) if 'user_id' in session else None
 
-    # Main posting
     posting = SearchResult.query.get_or_404(result_id)
 
-    # Load similar results (e.g., same company or similar job title)
     similar_postings = SearchResult.query.filter(
         (SearchResult.company == posting.company) |
         (SearchResult.job.ilike(f"%{posting.job}%"))
@@ -504,6 +487,34 @@ def posting(result_id):
         prev_query=request.args.get('query', ''),
         user=user,
         similar_postings=similar_postings
+    )
+
+@app.route('/linkedin_posting/<int:result_index>')
+def linkedin_posting(result_index):
+    query = request.args.get('query', '')
+    page = int(request.args.get('page', 1))
+    show_db = request.args.get('show_db', '1')
+    show_companies = request.args.get('show_companies', '1')
+    show_requirements = request.args.get('show_requirements', '1')
+    show_ideal = request.args.get('show_ideal', '1')
+    cache_key = f"search:{query}:{page}:{show_db}:{show_companies}:{show_requirements}:{show_ideal}"
+    cached = cache.get(cache_key)
+    linked_results = cached.get('linked_results', []) if cached else []
+    if not linked_results or result_index >= len(linked_results):
+        return "Posting not found", 404
+    result = linked_results[result_index]
+    user = User.query.get(session['user_id']) if 'user_id' in session else None
+
+    return render_template(
+        'linkedin_posting.html',
+        posting=result,
+        user=user,
+        prev_query=query,
+        page=page,
+        show_db=show_db,
+        show_companies=show_companies,
+        show_requirements=show_requirements,
+        show_ideal=show_ideal
     )
 
 @app.route('/google_posting/<int:result_index>')
@@ -530,6 +541,26 @@ def google_posting(result_index):
         user=user,
         similar_postings=[] 
     )
+
+@app.route('/save_result', methods=['POST'])
+def save_result():
+    job = request.form['job']
+    company = request.form['company']
+    location = request.form['location']
+    description = request.form['description']
+    url = request.form['url']
+    # Add any other fields you want
+
+    new_result = SearchResult(
+        job=job,
+        company=company,
+        location=location,
+        description=description,
+        url=url
+    )
+    db.session.add(new_result)
+    db.session.commit()
+    return redirect(url_for('search', query=job))
 
 #* Message
 
@@ -627,6 +658,38 @@ def apply(result_id):
         internship=internship,
         user=user
     )
+
+@app.route('/apply_linkedin', methods=['POST'])
+def apply_linkedin():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user = User.query.get(session['user_id'])
+    # Save the posting to SearchResult if not already saved
+    job = request.form['title']
+    company = request.form['company']
+    location = request.form['location']
+    description = request.form['description']
+    url = request.form['url']
+    # Check if already exists
+    existing = SearchResult.query.filter_by(job=job, company=company, url=url).first()
+    if not existing:
+        new_result = SearchResult(
+            job=job,
+            company=company,
+            location=location,
+            description=description,
+            url=url
+        )
+        db.session.add(new_result)
+        db.session.commit()
+        result_id = new_result.id
+    else:
+        result_id = existing.id
+    # Create application
+    application = Application(user_id=user.id, job_id=result_id, status='Applied')
+    db.session.add(application)
+    db.session.commit()
+    return redirect(url_for('application'))
 
 #* History
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/Logo.png') }}">
     <link rel="stylesheet" href="{{url_for('static', filename='profile.css') }}">
 </head>
 <body>
@@ -54,65 +55,63 @@
                     <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">
 
                     <!-- File Upload + Image Preview -->
-                    <input type="file" id="inputImage">
+                    <input type="file" id="inputImage" name="profile_pic">
                     <br>
                     <img id="imagePreview" style="display: none;">
                     <br>
-                    <button id="cropBtn">Crop & Upload</button>
 
                     <!-- JS Cropper -->
                     <script src="https://unpkg.com/cropperjs"></script>
                     <script>
-                        let cropper;
-                        const inputImage = document.getElementById('inputImage');
-                        const imagePreview = document.getElementById('imagePreview');
-                        const cropBtn = document.getElementById('cropBtn');
+                    let cropper;
+                    const inputImage = document.getElementById('inputImage');
+                    const imagePreview = document.getElementById('imagePreview');
+                    const form = document.querySelector('form');
+                    const saveBtn = document.getElementById('saveBtn');
 
-                        inputImage.addEventListener('change', (e) => {
-                            const file = e.target.files[0];
-                            if (!file) return;
-
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                imagePreview.src = e.target.result;
-                                imagePreview.style.display = 'block';
-
-                                // Destroy existing cropper if any
-                                if (cropper) {
-                                    cropper.destroy();
-                                }
-
-                                // Wait for image to load before initializing cropper
-                                imagePreview.onload = function () {
-                                    cropper = new Cropper(imagePreview, {
-                                        aspectRatio: 1,
-                                        viewMode: 1
-                                    });
-                                };
+                    inputImage.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            imagePreview.src = e.target.result;
+                            imagePreview.style.display = 'block';
+                            if (cropper) cropper.destroy();
+                            imagePreview.onload = function () {
+                                cropper = new Cropper(imagePreview, {
+                                    aspectRatio: 1,
+                                    viewMode: 1
+                                });
                             };
-                            reader.readAsDataURL(file);
-                        });
+                        };
+                        reader.readAsDataURL(file);
+                    });
 
-                        cropBtn.addEventListener('click', () => {
-                            if (!cropper) return;
-
+                    form.addEventListener('submit', function(e) {
+                        if (cropper) {
+                            e.preventDefault();
                             cropper.getCroppedCanvas().toBlob((blob) => {
-                                const formData = new FormData();
-                                formData.append('profile_pic', blob, 'cropped.jpg');
-
-                                fetch('/upload_cropped_image', {
+                                const formData = new FormData(form);
+                                formData.set('profile_pic', blob, 'cropped.jpg');
+                                fetch(form.action, {
                                     method: 'POST',
                                     body: formData
                                 })
-                                .then(res => res.json())
-                                .then(data => alert(data.message))
-                                .catch(err => console.error(err));
+                                .then(res => {
+                                    if (res.redirected) {
+                                        window.location.href = res.url;
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                })
+                                .catch(err => alert("Upload failed!"));
                             });
-                        });
+                        }
+                        // else, let the form submit normally
+                    });
                     </script>
 
-
-                    <button type="submit">Save Changes</button>
+                    <button type="submit" id="saveBtn">Save Changes</button>
                 </form>
                 {% if edit_message %}
                     <p style="color:green;">{{ edit_message }}</p>
@@ -170,6 +169,7 @@
         </main>
     </div>
     <script>
+        
         // Simple JS to switch tabs
         const links = document.querySelectorAll('.sidebar a');
         const sections = document.querySelectorAll('.main-content section');

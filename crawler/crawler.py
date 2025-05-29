@@ -215,8 +215,10 @@ class GoogleScraper:
             current_start = 1
             results_fetched = 0
             while results_fetched < total_results:
-                params['q'] = query
-                response = requests.get(url, params=params)
+                local_params = params.copy()
+                local_params['q'] = query
+                local_params['start'] = current_start
+                response = requests.get(url, params=local_params)
                 results = response.json()
                 if 'items' in results:
                     for item in results['items']:
@@ -281,19 +283,29 @@ class TemporaryScraper:
         resp = requests.get(search_url, headers=headers)
         soup = bs4.BeautifulSoup(resp.text, "html.parser")
         results = []
-        for card in soup.select('.details-pane__content details-pane__content--show')[:max_results]:
-            title = card.select_one('h2').get_text(strip=True) if card.select_one('h2') else 'No title'
-            company = card.select_one('.topcard__org-name-link topcard__flavor--black-link').get_text(strip=True) if card.select_one('.topcard__org-name-link topcard__flavor--black-link') else 'No company'
-            description = card.select('.description__text description__text--rich').get_text(strip=True) if card.select('.description__text description__text--rich') else 'No description'
-            location = card.select_one('.topcard__flavor topcard__flavor--bullet').get_text(strip=True) if card.select_one('.topcard__flavor topcard__flavor--bullet') else 'No location'
-            link = card.select_one('a')['href'] if card.select_one('a') else '#'
+        for card in soup.select('ul.jobs-search__results-list li')[:max_results]:
+            title = card.find('h3').get_text(strip=True) if card.find('h3') else 'No title'
+            company = card.find('h4').get_text(strip=True) if card.find('h4') else 'No company'
+            location = card.find('span', class_='job-search-card__location').get_text(strip=True) if card.find('span', class_='job-search-card__location') else 'No location'
+            url = card.find('a', class_='base-card__full-link')['href'] if card.find('a', class_='base-card__full-link') else '#'
+            job_desc = card.find('p', class_='job-search-card__snippet').get_text(strip=True) if card.find('p', class_='job-search-card__snippet') else 'No description'
+            requirements = card.find('ul', class_='job-search-card__requirements').get_text(strip=True) if card.find('ul', class_='job-search-card__requirements') else 'No requirements'
+            ideal = card.find('ul', class_='job-search-card__ideal').get_text(strip=True) if card.find('ul', class_='job-search-card__ideal') else 'No ideal candidate description'
+            if url and url != '#':
+                detail_resp = requests.get(url, headers=headers)
+                detail_soup = bs4.BeautifulSoup(detail_resp.text, "html.parser")
+                # You need to inspect LinkedIn's job detail page HTML to find the correct selectors
+                desc_elem = detail_soup.find('div', class_='description__text')
+                job_desc = desc_elem.get_text(strip=True) if desc_elem else ''
+                # requirements and ideal would need similar logic if available    
             results.append({
                 'title': title,
                 'company': company,
-                'description': description,
                 'location': location,
-                'link': link
+                'link': url,
+                'description': job_desc,
+                'requirements': requirements,
+                'ideal': ideal
             })
         return results
 
-#* Anythin I don't want in the classes

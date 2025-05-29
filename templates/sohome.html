@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='sohome.css') }}">
-    <title>App (Base Version)</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/Logo.png') }}">
+    <title>Vantage</title>
 </head>
 <body>
     <div class="nav">
         <div class="brand">
-            <h1>InternMate</h1>
+            <h1>Vantage</h1>
         </div>
         <div class="tabs">
             <ul>
@@ -32,13 +33,13 @@
             <button type="submit">Search</button> <!--! Search button should take user to the search page and show the results-->
         </form>
     </div>
-    <div class="results">
-        <ul>
+    <div class="results-container">
+        <ul class="results-list">
             {% if results and results| length > 0 %}    
                 {% for result in results %}
-                    <li>
+                    <li class="result-card">
                         <strong>{{ result.job }}</strong> at {{ result.company }} ({{ result.location }})<br>
-                        <a href="{{ result.url }}" target="_blank">View Job</a> | Posted: {{ result.posted }}
+                        <a href="{{ result.url }}" target="_blank" class="result-link">View Job</a>
                     </li>
                 {% endfor %}
             {% else %} 
