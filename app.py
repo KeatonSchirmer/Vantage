@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, jsonify
 from flask_mail import Mail, Message
 from flask_caching import Cache
+from flask_migrate import Migrate
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from database.db import db
@@ -23,6 +24,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_v76t_user:btcqKvJJQKOB2JYNo7fHkNrl3FpSuNp5@dpg-d0rv1di4d50c73b3drb0-a/user_v76t'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+migrate = Migrate(app, db)
 
 app.secret_key = 'schirmer_czubaj'
 
@@ -714,5 +716,4 @@ def history():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        print(SearchResult.query.all())
     app.run(debug=True)
