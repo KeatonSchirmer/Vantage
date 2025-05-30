@@ -19,8 +19,7 @@ from sqlalchemy.orm import joinedload
 
 #* App
 app = Flask(__name__)
-port = int(os.environ.get("PORT", 5000))
-app.run(host='0.0.0.0', port=port)
+
 
 #* DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_v76t_user:btcqKvJJQKOB2JYNo7fHkNrl3FpSuNp5@dpg-d0rv1di4d50c73b3drb0-a/user_v76t'
@@ -718,4 +717,6 @@ def history():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host='0.0.0.0', port=port)
     app.run(debug=True)
