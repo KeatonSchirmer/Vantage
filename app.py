@@ -4,7 +4,6 @@ from flask_caching import Cache
 from flask_migrate import Migrate
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
-from database.db import db
 from database.models import SearchResult, save_results_to_db, User, Application
 from optimization.resume import resume_text, resume_keywords, optimize_resume
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -14,7 +13,10 @@ from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image, ImageDraw
 from sqlalchemy.orm import joinedload
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 
 
 #* App
