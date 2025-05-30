@@ -13,7 +13,6 @@ from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image, ImageDraw
 from sqlalchemy.orm import joinedload
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
