@@ -19,7 +19,7 @@ from sqlalchemy.orm import joinedload
 
 #* App
 app = Flask(__name__)
-@app.before_first_request
+@app._got_first_request
 def create_tables():
     db.create_all()
 
