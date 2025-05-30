@@ -20,17 +20,19 @@ from sqlalchemy.orm import joinedload
 #* App
 app = Flask(__name__)
 
-#* DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-@app.before_first_request
-def create_tables():
-    db.create_all()
+
 migrate = Migrate(app, db)
 
 app.secret_key = os.environ.get('SECRET_KEY')
 
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
+#* DB
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 #* Cache
 app.config['CACHE_TYPE'] = 'SimpleCache'
