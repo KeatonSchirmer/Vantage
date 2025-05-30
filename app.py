@@ -19,7 +19,9 @@ from sqlalchemy.orm import joinedload
 
 #* App
 app = Flask(__name__)
-
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 #* DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
