@@ -20,6 +20,9 @@ from sqlalchemy.orm import joinedload
 #* App
 app = Flask(__name__)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db.init_app(app)
 
 migrate = Migrate(app, db)
@@ -31,8 +34,7 @@ def create_tables():
     db.create_all()
 
 #* DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 #* Cache
 app.config['CACHE_TYPE'] = 'SimpleCache'
