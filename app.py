@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image, ImageDraw
 from sqlalchemy.orm import joinedload
-from app import db
+from database.db import db
 
 
 #* App
