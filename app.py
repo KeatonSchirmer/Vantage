@@ -30,10 +30,6 @@ migrate = Migrate(app, db)
 
 app.secret_key = os.environ.get('SECRET_KEY')
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
 #* DB
 
 
