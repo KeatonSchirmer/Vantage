@@ -51,7 +51,7 @@ s = URLSafeTimedSerializer(app.secret_key)
 PROFILE_PIC = 'vantage/static/profile_uploads'
 os.makedirs('static/profile_uploads', exist_ok=True)
 app.config['PROFILE_PIC'] = PROFILE_PIC
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'profile_uploads')
+app.config['UPLOAD_FOLDER'] = PROFILE_PIC
 
 #* Scheduler
 scheduler = BackgroundScheduler()
