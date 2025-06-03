@@ -15,7 +15,7 @@
                 <li><a href="{{url_for('home') }}">Home</a></li>
                 <li><a href="{{url_for('message') }}">Message</a></li>
                 <li><a href="{{url_for('application') }}">Applications</a></li>
-                <li><a href="{{url_for('history') }}">History</a></li>
+                <li><a href="{{url_for('saved') }}">Saved</a></li>            
             </ul>
         </div>
         <div class="profile">
@@ -30,7 +30,7 @@
         <div class="search_bar">
             <form method="POST" action="{{ url_for('search') }}" class="search-bar-form">
                 <input type="text" name="query" placeholder="Search...">
-                <button type="submit" id="search-button">Search</button> <!--! Search button should take user to the search page and show the results-->
+                <button type="submit" id="search-button" class="filter-btn">Search</button> <!--! Search button should take user to the search page and show the results-->
             </form>
         </div>
             <div class="filter-btn-row">
