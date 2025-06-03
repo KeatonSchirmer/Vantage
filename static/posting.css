@@ -145,3 +145,28 @@ ul {
     padding: 20px;
     box-sizing: border-box;
 }
+@media (max-width: 600px) {
+    .reset-container {
+        max-width: 98vw;
+        margin: 30px auto;
+        padding: 18px 6vw 18px 6vw;
+        border-radius: 12px;
+    }
+    .reset-container h2 {
+        font-size: 1.3rem;
+        margin-bottom: 18px;
+    }
+    .reset-container input[type="password"] {
+        padding: 10px 10px;
+        font-size: 1rem;
+    }
+    .reset-container button {
+        padding: 12px 0;
+        font-size: 1rem;
+        border-radius: 18px;
+    }
+    .reset-container a {
+        font-size: 0.98rem;
+        margin-top: 12px;
+    }
+}

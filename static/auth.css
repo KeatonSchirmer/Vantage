@@ -127,3 +127,82 @@ a:hover {
     color: #F4A300;
     margin-top: 10px;
 }
+@media (max-width: 900px) {
+    .title {
+        padding-left: 0;
+        width: 100%;
+        font-size: 1.2rem;
+        justify-content: flex-start;
+    }
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 10px;
+    }
+    .home {
+        width: auto;
+        font-size: large;
+        justify-content: flex-end;
+    }
+    .forms form {
+        width: 90vw;
+        min-width: 0;
+        padding: 30px 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 8px 4vw;
+    }
+    .title {
+        font-size: 1rem;
+        padding-left: 0;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .home {
+        font-size: 1rem;
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .forms {
+        padding: 20px 0;
+    }
+    .forms form {
+        width: 98vw;
+        padding: 18px 2vw;
+        border-radius: 12px;
+        font-size: 1rem;
+    }
+    .forms input[type="text"],
+    .forms input[type="password"],
+    .forms input[type="email"] {
+        font-size: 1rem;
+        padding: 10px 10px;
+        border-radius: 8px;
+    }
+    .forms button,
+    .logreg_button button {
+        font-size: 1rem;
+        padding: 12px 0;
+        border-radius: 18px;
+    }
+    .logreg_button {
+        padding-top: 10px;
+    }
+    .error {
+        font-size: 1rem;
+    }
+}
+
+/* Make sure all buttons and links are easy to tap */
+button,
+.logreg_button button,
+a {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 1rem;
+}
