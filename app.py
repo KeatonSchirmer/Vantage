@@ -48,7 +48,7 @@ mail = Mail(app)
 s = URLSafeTimedSerializer(app.secret_key)
 
 #* Profile Pic
-PROFILE_PIC = 'vantage/static/profile_uploads'
+PROFILE_PIC = os.path.join('static', 'profile_uploads')
 os.makedirs('static/profile_uploads', exist_ok=True)
 app.config['PROFILE_PIC'] = PROFILE_PIC
 app.config['UPLOAD_FOLDER'] = PROFILE_PIC
@@ -549,22 +549,34 @@ def google_posting(result_index):
 
 @app.route('/save_result', methods=['POST'])
 def save_result():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user_id = session['user_id']
+
     job = request.form['job']
     company = request.form['company']
     location = request.form['location']
     description = request.form['description']
     url = request.form['url']
-    # Add any other fields you want
 
-    new_result = SearchResult(
-        job=job,
-        company=company,
-        location=location,
-        description=description,
-        url=url
-    )
-    db.session.add(new_result)
-    db.session.commit()
+    result = SearchResult.query.filter_by(job=job, company=company, url=url).first()
+    if not result:
+        result = SearchResult(
+            job=job,
+            company=company,
+            location=location,
+            description=description,
+            url=url
+        )
+        db.session.add(result)
+        db.session.commit()
+
+    existing_saved = SavedListing.query.filter_by(user_id=user_id, job_id=result.id).first()
+    if not existing_saved:
+        saved = SavedListing(user_id=user_id, job_id=result.id)
+        db.session.add(saved)
+        db.session.commit()
+
     return redirect(url_for('search', query=job))
 
 #* Message
@@ -696,10 +708,10 @@ def apply_linkedin():
     db.session.commit()
     return redirect(url_for('application'))
 
-#* History
+#* Saved
 
-@app.route('/history', methods=['GET', 'POST'])
-def history():
+@app.route('/saved', methods=['GET', 'POST'])
+def saved():
     try:
         if 'user_id' not in session:
             return redirect(url_for('login'))
@@ -710,11 +722,13 @@ def history():
         if not user:
             return 'User not found', 404
         
-        return render_template('history.html', user=user)
+        saved_results = SearchResult.query.join(SavedListing, SavedListing.job_id == SearchResult.id)\
+            .filter(SavedListing.user_id == user_id).all()
+        
+        return render_template('saved.html', user=user, saved_results=saved_results)
     except Exception as e:
         app.logger.error(f'Error in /message route: {e}')
-        return 'An error occured while fetching messages'
-
+        return 'An error occured while fetching saved'
 
 if __name__ == '__main__':
     with app.app_context():

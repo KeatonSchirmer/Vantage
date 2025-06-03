@@ -101,28 +101,13 @@ ul {
     margin-right: 10px;
     box-sizing: border-box;
 }
-.search_bar button {
-    padding: 15px 30px;
-    font-size: 1.1rem;
-    border-radius: 25px;      /* Makes the button round */
-    border: none;
-    background-color: #F4A300;
-    color: #FFFFFF;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.search_bar button:hover {
-    background-color: #FFFFFF;
-    color: #0B1F3A;
-}
-/* Center the whole search bar and filter button vertically */
+
 .search-bar-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
 }
-/* Make the filter button row centered and with less margin */
 .filter-btn-row {
     display: flex;
     justify-content: center;
@@ -130,7 +115,6 @@ ul {
     margin-top: 8px;
     padding-left: 350px;
 }
-/* Make the filter button smaller */
 .filter-btn {
     background: #F4A300;
     color: #0B1F3A;
@@ -321,7 +305,8 @@ ul {
     margin-bottom: 10px;
 }
 
-.result-link {
+a.result-link,
+button.result-link {
     margin-top: 10px;
     align-self: flex-start;
     background: #F4A300;
@@ -333,7 +318,8 @@ ul {
     transition: background 0.2s;
 }
 
-.result-link:hover {
+a.result-link:hover,
+button.result-link:hover {
     background: #0B1F3A;
     color: #F4A300 !important;
     border: 1px solid #F4A300;

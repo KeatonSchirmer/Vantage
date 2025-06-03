@@ -136,9 +136,9 @@ ul {
     line-height: 1.6;
     font-size: 1.15rem;
 }
-.result-link,
+.result-link,.button.result-link,
 .button-stack .result-link,
-.button-stack button.result-link {
+.button-stack button.result-link{
     background: #F4A300;
     color: #0B1F3A !important;
     border: none;
@@ -155,7 +155,7 @@ ul {
     box-sizing: border-box;
     display: block;
 }
-.result-link:hover,
+.result-link:hover,button.result-link:hover,
 .button-stack .result-link:hover,
 .button-stack button.result-link:hover {
     background: #0B1F3A;

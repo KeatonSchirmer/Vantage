@@ -32,6 +32,22 @@ a:hover {
     background: #FFFFFF;
     color: #F4A300;
 }
+.logout-btn {
+    margin-top: 10px;
+    align-self: flex-start;
+    background: #F4A300;
+    color: #0B1F3A !important;
+    padding: 8px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.logout-btn:hover {
+    background: #0B1F3A;
+    color: #F4A300 !important;
+    border: 1px solid #F4A300;
+}
 .container {
     display: flex;
     min-height: 100vh;
@@ -67,20 +83,6 @@ a:hover {
 .main-content {
     flex: 1;
     padding: 40px;
-}
-.content {
-    font-size: large;
-    padding: 30px;
-    background: #FFFFFF;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(244,163,0,0.04);
-    max-width: 500px;
-    margin: 0 auto;
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #0B1F3A;
 }
 #edit-profile img,
 .profile img {

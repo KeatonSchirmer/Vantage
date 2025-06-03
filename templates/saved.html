@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>History</title>
+    <title>Saved</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/StudentVantage Logo.png') }}">
-    <link rel="stylesheet" href="{{url_for('static', filename='history.css') }}">
+    <link rel="stylesheet" href="{{url_for('static', filename='saved.css') }}">
 </head>
 <body>
     <div class="nav">
@@ -17,7 +17,7 @@
                 <li><a href="{{url_for('home') }}">Home</a></li> <!--Home-->
                 <li><a href="{{url_for('message') }}">Message</a></li> <!--Message-->
                 <li><a href="{{url_for('application') }}">Applications</a></li> <!--Applications-->
-                <li><a href="{{url_for('history') }}">History</a></li> <!--History-->
+                <li><a href="{{url_for('saved') }}">Saved</a></li>
             </ul>
         </div>
         <div class="profile">
@@ -26,6 +26,23 @@
             </a>
             <ul><li><a href="{{url_for('profile') }}">{{ user.username }}</a></li></ul>
         </div>
+    </div>
+    <div class="container">
+        {% if saved_results and saved_results|length > 0 %}
+            {% for result in saved_results %}
+                <div>
+                    <h3>{{ result.job }}</h3>
+                    <p>{{ result.company }} - {{ result.location }}</p>
+                    <a href="{{ result.url }}" target="_blank">View Original</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-save">
+                <p>No saved listings</p>
+                <a href="{{ url_for('search')}}">Search Listings</a>
+            </div>
+            
+        {% endif %}
     </div>
 </body>
 </html>
