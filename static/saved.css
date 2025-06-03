@@ -94,3 +94,76 @@ ul {
     cursor: pointer;
     transition: background 0.2s;
 }
+@media (max-width: 900px) {
+    body {
+        margin-left: 0;
+    }
+    .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 60px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+        box-shadow: 0 2px 5px rgba(244,163,0,0.08);
+        z-index: 1000;
+    }
+    .brand {
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+    .tabs {
+        flex-direction: row;
+        gap: 10px;
+        font-size: 1rem;
+        width: auto;
+    }
+    .tabs ul {
+        flex-direction: row;
+        gap: 10px;
+    }
+    .profile {
+        display: none;
+    }
+    .empty-save {
+        padding-top: 80px;
+    }
+}
+
+@media (max-width: 600px) {
+    .nav {
+        height: 48px;
+        padding: 0 4px;
+    }
+    .brand {
+        font-size: 1rem;
+    }
+    .tabs {
+        font-size: 0.95rem;
+    }
+    .empty-save a {
+        padding: 12px 18px;
+        font-size: 1rem;
+    }
+    .empty-save {
+        padding-top: 60px;
+    }
+}
+
+a,
+.empty-save a {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 1rem;
+}
+
+.tabs ul {
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.tabs ul::-webkit-scrollbar {
+    display: none;
+}

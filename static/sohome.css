@@ -209,3 +209,108 @@ ul {
         grid-template-columns: 1fr;
     }
 }
+@media (max-width: 900px) {
+    body {
+        margin-left: 0;
+    }
+    .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 60px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+        box-shadow: 0 2px 5px rgba(244,163,0,0.08);
+        z-index: 1000;
+    }
+    .brand {
+        font-size: 1.2rem;
+        margin-bottom: 0;
+    }
+    .tabs {
+        flex-direction: row;
+        gap: 10px;
+        font-size: 1rem;
+    }
+    .tabs ul {
+        flex-direction: row;
+        gap: 10px;
+    }
+    .profile {
+        display: none;
+    }
+    .results-container {
+        padding-top: 80px;
+    }
+}
+
+@media (max-width: 700px) {
+    .results-container {
+        grid-template-columns: 1fr;
+        padding: 10px 0;
+        gap: 16px;
+    }
+    .result-card {
+        max-width: 98vw;
+        min-width: 0;
+        font-size: 1rem;
+        padding: 16px 8px 14px 8px;
+    }
+    .search_bar input[type="text"] {
+        width: 90vw;
+        font-size: 1rem;
+        padding: 10px 12px;
+    }
+    .filter-btn {
+        padding: 8px 12px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .nav {
+        height: 48px;
+        padding: 0 4px;
+    }
+    .brand {
+        font-size: 1rem;
+    }
+    .tabs {
+        font-size: 0.95rem;
+    }
+    .result-card {
+        font-size: 0.95rem;
+        padding: 10px 2px 10px 2px;
+    }
+    .result-link {
+        padding: 6px 10px;
+        font-size: 0.95rem;
+    }
+    .search_bar input[type="text"] {
+        width: 80vw;
+        font-size: 0.95rem;
+        padding: 8px 8px;
+    }
+    .filter-btn {
+        padding: 6px 8px;
+        font-size: 0.9rem;
+    }
+}
+button,
+.result-link,
+.filter-btn {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 1rem;
+}
+
+.tabs ul {
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.tabs ul::-webkit-scrollbar {
+    display: none;
+}
