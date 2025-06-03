@@ -48,7 +48,7 @@ mail = Mail(app)
 s = URLSafeTimedSerializer(app.secret_key)
 
 #* Profile Pic
-PROFILE_PIC = 'vantage/static/profile_uploads'
+PROFILE_PIC = os.path.join('static', 'profile_uploads')
 os.makedirs('static/profile_uploads', exist_ok=True)
 app.config['PROFILE_PIC'] = PROFILE_PIC
 app.config['UPLOAD_FOLDER'] = PROFILE_PIC
