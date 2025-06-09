@@ -50,7 +50,6 @@
             </div>
     </div>    
     <div class="container">
-        <h2 class="result-header">Search Results for "{{ query }}"</h2>
         <div class="results-container">
             <ul class="results-list">
                 {% for result in db_results %}
@@ -66,20 +65,29 @@
 
 
                 {% for result in google_results %}
-                    <div>
+                    <li class="result-card">
                         <a href="{{ url_for('google_posting', result_index=loop.index0, query=query, page=page, show_db=show_db, show_companies=show_companies, show_requirements=show_requirements, show_ideal=show_ideal) }}">
-                        <h4>{{ result.title or result.job }}</h4></a>
+                        <h3>{{ result.title or result.job }}</h3></a>
                         <p>{{ result.snippet or result.description }}</p>
-                        <a href="{{ result.link or result.url }}" target="_blank">View</a>
+                        <a href="{{ result.link or result.url }}" target="_blank" class="result-link">View Original</a>
+                        <a class="result-link" href="{{ url_for('google_posting', 
+                            result_index=loop.index0, 
+                            query=query, page=page, 
+                            show_db=show_db, 
+                            show_companies=show_companies, 
+                            show_requirements=show_requirements, 
+                            show_ideal=show_ideal) }}">
+                            View
+                        </a>                            
                         <form action="{{ url_for('save_result') }}" method="post">
                         <input type="hidden" name="job" value="{{ result.title or result.job }}">
                         <input type="hidden" name="company" value="{{ result.displayLink or result.company }}">
                         <input type="hidden" name="location" value="">
                         <input type="hidden" name="description" value="{{ result.snippet or result.description }}">
                         <input type="hidden" name="url" value="{{ result.link or result.url }}">
-                        <button type="submit">Save</button>
+                        <button type="submit" class="result-link">Save</button>
                         </form>
-                    </div>
+                    </li>
                 {% endfor %}
 
                 {% for result in linked_results %}

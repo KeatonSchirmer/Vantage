@@ -94,72 +94,99 @@ ul {
     cursor: pointer;
     transition: background 0.2s;
 }
-@media (max-width: 900px) {
+@media (max-width: 700px) {
     body {
-        margin-left: 0;
+        margin-left: 160px !important;
+        background: #0B1F3A !important;
     }
     .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 60px;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 10px;
-        box-shadow: 0 2px 5px rgba(244,163,0,0.08);
-        z-index: 1000;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 160px !important;
+        min-width: 160px !important;
+        height: 100vh !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        padding-top: 20px !important;
+        box-shadow: 2px 0 5px rgba(244,163,0,0.08) !important;
+        z-index: 1000 !important;
+        font-size: 0.95rem !important;
     }
     .brand {
-        font-size: 1.1rem;
-        margin-bottom: 0;
+        font-size: 1.1rem !important;
+        margin-bottom: 20px !important;
+        color: #F4A300 !important;
     }
     .tabs {
-        flex-direction: row;
-        gap: 10px;
-        font-size: 1rem;
-        width: auto;
+        font-size: 1.1rem !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+        width: 100% !important;
     }
     .tabs ul {
-        flex-direction: row;
-        gap: 10px;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+    .tabs ul li a {
+        font-size: 1rem !important;
     }
     .profile {
-        display: none;
+        font-size: 1rem !important;
+        display: block !important;
+        padding-bottom: 30px !important;
+    }
+    .profile img {
+        width: 60px !important;
+        border-radius: 30px !important;
+        border-width: 2px !important;
     }
     .empty-save {
-        padding-top: 80px;
-    }
-}
-
-@media (max-width: 600px) {
-    .nav {
-        height: 48px;
-        padding: 0 4px;
-    }
-    .brand {
-        font-size: 1rem;
-    }
-    .tabs {
-        font-size: 0.95rem;
+        min-height: 60vh !important;
+        padding-top: 40px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-direction: column !important;
     }
     .empty-save a {
-        padding: 12px 18px;
-        font-size: 1rem;
+        padding: 10px 18px !important;
+        font-size: 1rem !important;
+        border-radius: 20px !important;
+        background: #F4A300 !important;
+        color: #FFFFFF !important;
+    }
+}
+
+@media (max-width: 500px) {
+    .nav {
+        width: 120px !important;
+        min-width: 120px !important;
+        font-size: 0.9rem !important;
+        height: 100vh !important;
+    }
+    .brand {
+        font-size: 1rem !important;
+    }
+    .tabs {
+        font-size: 0.95rem !important;
+    }
+    .profile {
+        font-size: 0.95rem !important;
+    }
+    .profile img {
+        width: 44px !important;
+        border-radius: 22px !important;
+    }
+    .empty-save a {
+        padding: 8px 12px !important;
+        font-size: 0.95rem !important;
     }
     .empty-save {
-        padding-top: 60px;
+        padding-top: 20px !important;
     }
 }
 
-a,
-.empty-save a {
-    min-height: 44px;
-    min-width: 44px;
-    font-size: 1rem;
-}
-
+/* Hide scrollbars for nav/tabs on mobile, like sihome.css */
 .tabs ul {
     overflow-x: auto;
     scrollbar-width: none;
