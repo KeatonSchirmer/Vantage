@@ -72,6 +72,9 @@ a {
 a:hover {
     color: #FFFFFF;
 }
+.result-card a:hover{
+    color: #CC8800;
+}
 ul {
     list-style: none;
     padding: 0;

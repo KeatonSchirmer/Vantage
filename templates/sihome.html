@@ -40,14 +40,16 @@
         <table class="mini-app-table">
             <tr>
                 <th>Job</th>
+                <th>Company</th>
                 <th>Status</th>
                 <th>Date</th>
             </tr>
             {% for app in mini_apps %}
             <tr>
-                <td>{{ app.job.job }}</td>
+                <td>{{ app.job_title }}</td>
+                <td>{{ app.company }}</td>
                 <td>{{ app.status }}</td>
-                <td>{{ app.applied_at.strftime('%Y-%m-%d') }}</td>
+                <td>{{ app.applied_at.strftime('%Y-%m-%d') if app.applied_at }}</td>
             </tr>
             {% endfor %}
         </table>

@@ -220,65 +220,68 @@ class GoogleScraper:
                 local_params['start'] = current_start
                 response = requests.get(url, params=local_params)
                 results = response.json()
-                if 'items' in results:
-                    for item in results['items']:
-                        title = item.get('title', 'No title available')
-                        link = item.get('link', 'No link available')
-                        snippet = item.get('snippet', 'No snippet available')
-                        if any(keyword in title.lower() for keyword in ignore_keywords) or \
-                           any(keyword in link.lower() for keyword in ignore_keywords) or \
-                           any(keyword in snippet.lower() for keyword in ignore_keywords):
-                            continue
-                        # Optionally check for 200 status code
-                        try:
-                            head_resp = requests.head(link, timeout=3, allow_redirects=True)
-                            if head_resp.status_code == 200:
-                                all_results.append({
-                                    'title': title,
-                                    'link': link,
-                                    'snippet': snippet,
-                                    'category': query.replace(user_query, '').strip()
-                                })
-                                results_fetched += 1
-                        except Exception:
-                            continue
-                        if results_fetched >= total_results:
-                            break
-                else:
+
+                if 'items' not in results:
                     break
+
+                for item in results['items']:
+                    title = item.get('title', '').lower()
+                    link = item.get('link', '').lower()
+                    snippet = item.get('snippet', '').lower()
+
+                    if any(keyword in title for keyword in ignore_keywords) or \
+                    any(keyword in link for keyword in ignore_keywords) or \
+                    any(keyword in snippet for keyword in ignore_keywords):
+                        continue
+
+                    # Optional: Remove or comment out the HEAD request for speed
+                    # try:
+                    #     head_resp = requests.head(link, timeout=3, allow_redirects=True)
+                    #     if head_resp.status_code != 200:
+                    #         continue
+                    # except Exception:
+                    #     continue
+
+                    all_results.append({
+                        'title': item.get('title', 'No title'),
+                        'link': item.get('link', 'No link'),
+                        'snippet': item.get('snippet', 'No snippet'),
+                        'category': query.replace(user_query, '').strip()
+                    })
+                    results_fetched += 1
+                    if results_fetched >= total_results:
+                        break
+
+                if len(results['items']) < results_per_page:
+                    # No more results on next pages
+                    break
+
                 current_start += results_per_page
+
         return all_results
 
     if __name__ == '__main__':
-        user_input = input('Degree: ')          # User input should be recieved from app or website not console
-        queries = [
-            f'{user_input} internships',
-            f'{user_input} companies',
-            f'{user_input} internship requirements',
-            f'{user_input} ideal internship and career path'
-        ]
-
-
+        user_query = input('Degree: ')
         url = 'https://customsearch.googleapis.com/customsearch/v1'
         ignore_keywords = ['linkedin', 'indeed', 'wikipedia']
-        current_start = 1
-        results_fetched = 0
-        total_results = 40      # Total results fetched
-        results_per_page = 10 
-
+        total_results = 40
+        results_per_page = 10
         params = {
-            'key': 'AIzaSyDRev_yjHadZmkCkxqYP8Y4XzxEahLp1gA',
-            'cx': '23c933d7a0f4840b0',
-            'q': queries,
-            'start': 40
+            'key': 'AIzaSyDq_GFJzlkOQV0R0EFBD8iVdyCvqypLbk4',
+            'cx': 'f43b15d72db4d49d3',
+            # 'q' will be overridden inside search_api
         }
-        search_api(queries, total_results, params, url, ignore_keywords, results_per_page)
+
+        results = search_api(user_query, total_results, params, url, ignore_keywords, results_per_page)
+        print(f"Total results: {len(results)}")
+        for r in results:
+            print(r['title'], r['link'])
 
 class TemporaryScraper:
     def temporary_search(query, max_results=10):
-        search_url = f"https://www.linkedin.com/jobs/search/?keywords={query}&f_E=2"
+        search_url = 'https://www.linkedin.com/jobs/search/?currentJobId=4238101062&keywords=college%20internship'
         headers = {
-            'User-Agent': 'Mozilla/5.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
         }
         resp = requests.get(search_url, headers=headers)
         soup = bs4.BeautifulSoup(resp.text, "html.parser")
@@ -309,3 +312,4 @@ class TemporaryScraper:
             })
         return results
 
+#f"https://www.linkedin.com/jobs/search/?keywords={query}&f_E=2"

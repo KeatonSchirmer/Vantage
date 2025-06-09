@@ -174,105 +174,131 @@ ul {
     font-size: 1em;
     margin: 10px 0;
 }
-@media (max-width: 900px) {
+@media (max-width: 700px) {
     body {
-        margin-left: 0;
+        margin-left: 160px !important;
+        background: #0B1F3A !important;
     }
     .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 60px;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 10px;
-        box-shadow: 0 2px 5px rgba(244,163,0,0.08);
-        z-index: 1000;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 160px !important;
+        min-width: 160px !important;
+        height: 75vh !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        padding-top: 20px !important;
+        box-shadow: 2px 0 5px rgba(244,163,0,0.08) !important;
+        z-index: 1000 !important;
+        font-size: 0.95rem !important;
     }
     .brand {
-        font-size: 1.1rem;
-        margin-bottom: 0;
+        font-size: 1.1rem !important;
+        margin-bottom: 20px !important;
     }
     .tabs {
-        flex-direction: row;
-        gap: 10px;
-        font-size: 1rem;
+        font-size: 1.1rem !important;
+        flex-direction: column !important;
+        gap: 20px !important;
     }
     .tabs ul {
-        flex-direction: row;
-        gap: 10px;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+    .tabs ul li a {
+        font-size: 1rem !important;
     }
     .profile {
-        display: none;
+        font-size: 1rem !important;
+        display: block !important;
+        padding-bottom: 30px !important;
+    }
+    .profile img {
+        width: 60px !important;
+        border-radius: 30px !important;
+        border-width: 2px !important;
     }
     .application-outer {
-        padding-top: 70px;
+        padding-top: 0 !important;
+        margin: auto !important;
+        max-width: 800px !important;
+        background: #0B1F3A !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 12px rgba(244,163,0,0.08) !important;
     }
-}
-
-@media (max-width: 700px) {
     .application {
-        min-width: 0;
-        max-width: 98vw;
-        padding: 10px 4px 8px 4px;
-        font-size: 1rem;
+        min-width: 0 !important;
+        max-width: 98vw !important;
+        font-size: .85rem !important;
+        padding: 16px 8px 14px 8px !important;
+        border-radius: 8px !important;
+        border-width: 2px !important;
+        box-shadow: 0 1px 4px rgba(244,163,0,0.08) !important;
+        color: #0B1F3A !important;
+        background: #FFFFFF !important;
     }
     .mini-app-table th, .mini-app-table td {
-        font-size: 0.95em;
-        padding: 4px 4px;
+        font-size: 0.95em !important;
+        padding: 4px 4px !important;
+    }
+    .mini-app-link {
+        padding: 8px 12px !important;
+        font-size: 0.95rem !important;
+        border-radius: 20px !important;
     }
     .search_bar input[type="text"] {
-        width: 90vw;
-        font-size: 1rem;
-        padding: 10px 12px;
+        width: 90vw !important;
+        font-size: 1rem !important;
+        padding: 10px 12px !important;
     }
-    .filter-btn, .mini-app-link {
-        padding: 8px 12px;
-        font-size: 0.95rem;
+    .filter-btn {
+        padding: 8px 12px !important;
+        font-size: 0.95rem !important;
+        border-radius: 20px !important;
     }
 }
 
+/* --- Extra small screens: keep sidebar and cards compact --- */
 @media (max-width: 500px) {
     .nav {
-        height: 48px;
-        padding: 0 4px;
+        width: 120px !important;
+        min-width: 120px !important;
+        font-size: 0.9rem !important;
     }
     .brand {
-        font-size: 1rem;
+        font-size: 0.75rem !important;
     }
     .tabs {
-        font-size: 0.95rem;
+        font-size: 0.85rem !important;
+    }
+    .profile {
+        font-size: 0.75rem !important;
+    }
+    .profile img {
+        width: 42px !important;
+        border-radius: 22px !important;
     }
     .application {
-        font-size: 0.95rem;
-        padding: 6px 2px 6px 2px;
+        font-size: 0.95rem !important;
+        padding: 10px 2px 10px 2px !important;
     }
     .mini-app-link, .filter-btn {
-        padding: 6px 8px;
-        font-size: 0.9rem;
+        padding: 6px 8px !important;
+        font-size: 0.75rem !important;
     }
     .search_bar input[type="text"] {
-        width: 80vw;
-        font-size: 0.95rem;
-        padding: 8px 8px;
+        width: 70vw !important;
+        font-size: 0.75rem !important;
+        padding: 8px 8px !important;
     }
     .mini-app-table th, .mini-app-table td {
-        font-size: 0.9em;
-        padding: 2px 2px;
+        font-size: 0.75em !important;
+        padding: 2px 2px !important;
     }
 }
-button,
-.filter-btn,
-a.result-link,
-button.result-link {
-    min-height: 44px;
-    min-width: 44px;
-    font-size: 1rem;
-}
 
-/* Hide scrollbars on mobile for horizontal nav if needed */
+/* Hide scrollbars for nav/tabs on mobile, like messages.css */
 .tabs ul {
     overflow-x: auto;
     scrollbar-width: none;

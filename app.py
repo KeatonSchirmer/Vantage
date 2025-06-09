@@ -1,11 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, jsonify, flash
 from flask_mail import Mail, Message
 from flask_caching import Cache
 from flask_migrate import Migrate
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
-from database.models import SearchResult, save_results_to_db, User, Application
-from optimization.resume import resume_text, resume_keywords, optimize_resume
 from apscheduler.schedulers.background import BackgroundScheduler
 from crawler.crawler import LinkedInScraper, GoogleScraper, TemporaryScraper
 import os
@@ -13,20 +11,18 @@ from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image, ImageDraw
 from sqlalchemy.orm import joinedload
-from database.db import db
+from database.db import users, applications, search_results, messages, saved_listings
+from bson import ObjectId
+from datetime import datetime
 
 
 #* App
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db.init_app(app)
-
-migrate = Migrate(app, db)
-
-app.secret_key = os.environ.get('SECRET_KEY')
+app.secret_key = 'anythin'
 
 #* DB
 
@@ -109,18 +105,31 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET'])
 def home():
-    results = SearchResult.query.order_by(SearchResult.id.desc()).limit(15).all() #! Should update everytime the crawler is automatically used
-    user = None
+    query = "college"
+    results = TemporaryScraper.temporary_search(query, max_results=15)
+
     if 'user_id' not in session:
-        return render_template('sohome.html', results=results, user=user)
-    else:
-        user = User.query.get(session['user_id']) 
+        return render_template('sohome.html', results=results, user=None)
 
-        mini_apps = []
-        if user:
-            mini_apps = sorted(user.applications, key=lambda a: a.applied_at, reverse=True)[:3]
-        return render_template('sihome.html', results=results, user=user, mini_apps=mini_apps)
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        return render_template('sohome.html', results=results, user=None)
 
+    user_apps = list(applications.find({"user_id": user['_id']}))
+
+    for app in user_apps:
+        job = search_results.find_one({"_id": app['job_id']})
+        if job:
+            app['job_title'] = job.get('title') or job.get('job') or "No Title"
+            app['company'] = job.get('company') or "No Company"
+        else:
+            app['job_title'] = "Unknown Job"
+            app['company'] = "Unknown Company"
+
+    mini_apps = sorted(user_apps, key=lambda a: a.get("applied_at", ""), reverse=True)[:3]
+
+    return render_template('sihome.html', results=results, user=user, mini_apps=mini_apps)
+    
 #* Login Settings
 
 @app.route('/auth', methods=['GET', 'POST'])
@@ -136,7 +145,7 @@ def login():
             username = request.form['username']
             password = request.form['password']
 
-            user = User.query.filter_by(username=username).first()
+            user = users.find_one({'username': username})
             if user and check_password_hash(user.password, password):
                 session["username"] = user.username
                 session['user_id'] = user.id
@@ -154,25 +163,23 @@ def login():
             degree = request.form['degree']
             address = request.form['address']
 
-            existing_user = User.query.filter_by(username=username).first()
+            existing_user = users.find_one({"username": username})
             if existing_user:
                 error = 'Username Taken'
                 return render_template('auth.html', error=error, form_type='register')
-            
             hashed_password = generate_password_hash(password, method='scrypt')
-            new_user = User(
-                first_name=first_name,
-                last_name=last_name,
-                username=username, 
-                password=hashed_password,
-                email=email,
-                degree=degree,
-                address=address
-                )
-            db.session.add(new_user)
-            db.session.commit()
-            session['username'] = new_user.username
-            session['user_id'] = new_user.id
+            new_user = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "username": username,
+                "password": hashed_password,
+                "email": email,
+                "degree": degree,
+                "address": address
+            }
+            users.insert_one(new_user)
+            session['username'] = username
+            session['user_id'] = str(new_user["_id"])
 
             return redirect(url_for('profile'))
         
@@ -245,7 +252,7 @@ def profile():
     if'user_id' not in session:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['user_id'])
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
     if user:
         return render_template('profile.html', user=user)
     else:
@@ -255,42 +262,51 @@ def profile():
 def edit_profile():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    user = User.query.get(session['user_id'])
-    if user:
-        user.first_name = request.form['first_name']
-        user.last_name = request.form['last_name']
-        user.email = request.form['email']
-        user.degree = request.form['degree']
-        user.address = request.form['address']
-        user.username = request.form['username']
+    
+    user_id = session['user_id']
+    
+    update_fields = {
+        "first_name": request.form.get('first_name'),
+        "last_name": request.form.get('last_name'),
+        "email": request.form.get('email'),
+        "degree": request.form.get('degree'),
+        "address": request.form.get('address'),
+        "username": request.form.get('username'),
+    }
+    
+    if 'profile_pic' in request.files:
+        file = request.files['profile_pic']
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            temp_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{uuid.uuid4().hex}_{filename}")
+            file.save(temp_path)
 
-        if 'profile_pic' in request.files:
-            file = request.files['profile_pic']
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                temp_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{uuid.uuid4().hex}_{filename}")
-                file.save(temp_path)
+            cropped_filename = circular_crop(temp_path)
+            update_fields['profile_pic'] = cropped_filename
 
-                cropped_filename = circular_crop(temp_path)
-                user.profile_pic = cropped_filename
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
 
-                try:
-                    os.remove(temp_path)
-                except Exception:
-                        pass
+    update_fields = {k: v for k, v in update_fields.items() if v is not None}
 
-        db.session.commit()
-        edit_message = "Profile updated successfully."
-        return redirect(url_for('profile', edit_message=edit_message))
-    else:
+    result = users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": update_fields}
+    )
+
+    if result.matched_count == 0:
         return "User not found", 404
+
+    return redirect(url_for('profile'))
 
 @app.route('/upload_cropped_image', methods=['POST'])
 def upload_cropped_image():
     if 'user_id' not in session:
         return jsonify({"message": "Not logged in"}), 401
 
-    user = User.query.get(session['user_id'])
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
     if not user:
         return jsonify({"message": "User not found"}), 404
 
@@ -313,7 +329,7 @@ def upload_cropped_image():
 def upload_resume():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    user = User.query.get(session['user_id'])
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
     if request.method == 'POST':
         if 'resume' not in request.files:
             return "No file part", 400
@@ -332,7 +348,7 @@ def upload_resume():
 
 @app.route('/resume/<username>')
 def view_resume(username):
-    user = User.query.filter_by(username=username).first()
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
     if not user or not user.resume_filename:
         return "Resume not found.", 404
 
@@ -345,17 +361,10 @@ def view_resume(username):
             user.resume_filename,
             as_attachment=False)
 
-#* Search
-    
-    #! Cache search results for set time
-    #! Add location search feature
-    #! Save to database only if user applies to the job (save to application table)
-
-    #! Fix filter dropdown closing before applying selection
+# Search
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-
     page = int(request.args.get('page', 1))
     per_page = 10
 
@@ -363,6 +372,8 @@ def search():
         query = request.form.get('query', '').strip()
     else:
         query = request.args.get('query', '').strip()
+    if not query:
+        query = "college internships"
 
     show_db = request.values.get('show_db', '1') == '1'
     show_companies = request.values.get('show_companies', '1') == '1'
@@ -377,8 +388,8 @@ def search():
         user_query=f"{query} internship",
         total_results=per_page,
         params={
-            'key': 'AIzaSyB4m72GwM1JZRE6axO2b7DHIGyK_DaFBc4',
-            'cx': 'd0f5dd3892bd54768',
+            'key': 'AIzaSyDq_GFJzlkOQV0R0EFBD8iVdyCvqypLbk4',
+            'cx': 'f43b15d72db4d49d3',
             'q': query,
             'start': 1 + (page - 1) * per_page
         },
@@ -401,28 +412,54 @@ def search():
     total_db_results = 0
     pagination = None
     if show_db and query:
-        query_filter = (SearchResult.job.ilike(f"%{query}%")) | \
-                    (SearchResult.company.ilike(f"%{query}%")) | \
-                    (SearchResult.location.ilike(f"%{query}%"))
-
-        q = SearchResult.query.filter(query_filter)
-
+        mongo_filter = {
+            "$or": [
+                {"job": {"$regex": query, "$options": "i"}},
+                {"company": {"$regex": query, "$options": "i"}},
+                {"location": {"$regex": query, "$options": "i"}}
+            ]
+        }
         if not show_companies:
-            q = q.filter((SearchResult.company == None) | (SearchResult.company == ""))
-
+            mongo_filter["company"] = {"$in": [None, ""]}
         if show_requirements:
-            q = q.filter(SearchResult.requirements != None).filter(SearchResult.requirements != "")
-
+            mongo_filter["requirements"] = {"$ne": None, "$ne": ""}
         if show_ideal:
-            q = q.filter(SearchResult.ideal_path != None).filter(SearchResult.ideal_path != "")
-       
-        pagination = q.distinct().paginate(page=page, per_page=per_page, error_out=False)
-        db_results = pagination.items
-        total_db_results = pagination.total
+            mongo_filter["ideal_path"] = {"$ne": None, "$ne": ""}
+
+        total_db_results = search_results.count_documents(mongo_filter)
+        db_results = list(
+            search_results.find(mongo_filter)
+            .skip((page - 1) * per_page)
+            .limit(per_page)
+        )
+
+    class Pagination:
+        def __init__(self, page, per_page, total):
+            self.page = page
+            self.per_page = per_page
+            self.total = total
+            self.pages = (total + per_page - 1) // per_page
+            self.has_prev = page > 1
+            self.has_next = page < self.pages
+            self.prev_num = page - 1 if self.has_prev else None
+            self.next_num = page + 1 if self.has_next else None
+
+        def iter_pages(self, left_edge=2, left_current=2, right_current=2, right_edge=2):
+            last = 0
+            for num in range(1, self.pages + 1):
+                if (
+                    num <= left_edge or
+                    (num >= self.page - left_current and num <= self.page + right_current) or
+                    num > self.pages - right_edge
+                ):
+                    if last + 1 != num:
+                        yield None
+                    yield num
+                    last = num
 
     # Cache results
     cache.set(cache_key, {
-        'db_results': [serialize_result(r) for r in db_results],
+        'db_results': db_results,
         'google_results': google_results,
         'linked_results': linked_results,
         'total_db_results': total_db_results,
@@ -434,7 +471,7 @@ def search():
         google_results=google_results,
         linked_results=linked_results,
         query=query,
-        user=User.query.get(session['user_id']) if 'user_id' in session else None,
+        user=users.find_one({"_id": ObjectId(session['user_id'])}) if 'user_id' in session else None,
         page=page,
         total_db_results=total_db_results,
         per_page=per_page,
@@ -443,48 +480,28 @@ def search():
         show_companies=show_companies,
         show_requirements=show_requirements,
         show_ideal=show_ideal
-    )
-    linked_results = []
-    if query:
-        linked_results = TemporaryScraper.temporary_search(query)
+    )   
 
-    unique_results = []
-    seen = set()
-
-    for r in db_results:
-        identifier = (r.job, r.company, r.location)  # Or any fields that define uniqueness
-        if identifier not in seen:
-            seen.add(identifier)
-            unique_results.append(r)
-
-
-    def serialize_result(result):
-        return {
-            'id': result.id,
-            'job': result.job,
-            'company': result.company,
-            'location': result.location,
-            'description': getattr(result, 'description', None),
-            'snippet': getattr(result, 'snippet', ''),
-            'url': getattr(result, 'url', None),
-        }
-
-
-
-    return render_template(
-        'search.html',
-    )    
-
-@app.route('/posting/<int:result_id>')
+@app.route('/posting/<result_id>')
 def posting(result_id):
-    user = User.query.get(session['user_id']) if 'user_id' in session else None
+    user = users.find_one({"_id": ObjectId(session['user_id'])}) if 'user_id' in session else None
 
-    posting = SearchResult.query.get_or_404(result_id)
+    posting = search_results.find_one({"_id": ObjectId(result_id)})
+    if not posting:
+        return "Posting not found", 404
 
-    similar_postings = SearchResult.query.filter(
-        (SearchResult.company == posting.company) |
-        (SearchResult.job.ilike(f"%{posting.job}%"))
-    ).filter(SearchResult.id != posting.id).limit(5).all()
+    # Find similar postings (by company or similar job title, excluding current posting)
+    similar_postings = list(
+        search_results.find({
+            "$and": [
+                {"_id": {"$ne": ObjectId(result_id)}},
+                {"$or": [
+                    {"company": posting.get("company")},
+                    {"job": {"$regex": posting.get("job", ""), "$options": "i"}}
+                ]}
+            ]
+        }).limit(5)
+    )
 
     return render_template(
         'posting.html',
@@ -502,13 +519,23 @@ def linkedin_posting(result_index):
     show_companies = request.args.get('show_companies', '1')
     show_requirements = request.args.get('show_requirements', '1')
     show_ideal = request.args.get('show_ideal', '1')
+
     cache_key = f"search:{query}:{page}:{show_db}:{show_companies}:{show_requirements}:{show_ideal}"
     cached = cache.get(cache_key)
     linked_results = cached.get('linked_results', []) if cached else []
+
     if not linked_results or result_index >= len(linked_results):
-        return "Posting not found", 404
+        flash("LinkedIn posting not found or expired.", "danger")
+        return redirect(url_for('search', query=query, page=page))
+
     result = linked_results[result_index]
-    user = User.query.get(session['user_id']) if 'user_id' in session else None
+
+    user = None
+    if 'user_id' in session:
+        try:
+            user = users.find_one({"_id": ObjectId(session['user_id'])})
+        except:
+            user = None
 
     return render_template(
         'linkedin_posting.html',
@@ -537,14 +564,18 @@ def google_posting(result_index):
         return "Posting not found", 404
 
     result = cached['google_results'][result_index]
-    user = User.query.get(session['user_id']) if 'user_id' in session else None
+    user = users.find_one({"_id": ObjectId(session['user_id'])}) if 'user_id' in session else None
 
     return render_template(
-        'posting.html',
+        'google_posting.html',  # changed from 'posting.html'
         posting=result,
         prev_query=query,
         user=user,
-        similar_postings=[] 
+        page=page,
+        show_db=show_db,
+        show_companies=show_companies,
+        show_requirements=show_requirements,
+        show_ideal=show_ideal
     )
 
 @app.route('/save_result', methods=['POST'])
@@ -559,23 +590,29 @@ def save_result():
     description = request.form['description']
     url = request.form['url']
 
-    result = SearchResult.query.filter_by(job=job, company=company, url=url).first()
+    # Check if the result already exists in the DB
+    result = search_results.find_one({"job": job, "company": company, "url": url})
     if not result:
-        result = SearchResult(
-            job=job,
-            company=company,
-            location=location,
-            description=description,
-            url=url
-        )
-        db.session.add(result)
-        db.session.commit()
+        result_data = {
+            "job": job,
+            "company": company,
+            "location": location,
+            "description": description,
+            "url": url
+        }
+        insert_result = search_results.insert_one(result_data)
+        result_id = insert_result.inserted_id
+    else:
+        result_id = result["_id"]
 
-    existing_saved = SavedListing.query.filter_by(user_id=user_id, job_id=result.id).first()
+    # Check if already saved
+    existing_saved = saved_listings.find_one({"user_id": user_id, "job_id": result_id})
     if not existing_saved:
-        saved = SavedListing(user_id=user_id, job_id=result.id)
-        db.session.add(saved)
-        db.session.commit()
+        saved = {
+            "user_id": user_id,
+            "job_id": result_id
+        }
+        saved_listings.insert_one(saved)
 
     return redirect(url_for('search', query=job))
 
@@ -585,36 +622,52 @@ def save_result():
 def message():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    user = User.query.get(session['user_id'])
+    
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        return redirect(url_for('login'))
 
     if request.method == 'POST':
         recipient_username = request.form['recipient']
         content = request.form['content']
-        recipient = User.query.filter_by(username=recipient_username).first()
+        recipient = users.find_one({"username": recipient_username})
         if recipient and content.strip():
-            msg = Message(sender_id=user.id, recipient_id=recipient.id, content=content)
-            db.session.add(msg)
-            db.session.commit()
+            msg_doc = {
+                "sender_id": user["_id"],
+                "recipient_id": recipient["_id"],
+                "content": content,
+                "timestamp": datetime.utcnow()
+            }
+            messages.insert_one(msg_doc)
 
-    conversation_user_ids = set(
-        [m.sender_id for m in user.received_messages] +
-        [m.recipient_id for m in user.sent_messages]
-    )
-    conversation_user_ids.discard(user.id)
-    all_conversation_users = User.query.filter(User.id.in_(conversation_user_ids)).all()
-    user_conversations = [u for u in all_conversation_users if not getattr(u, 'is_company', False)]
-    company_conversations = [u for u in all_conversation_users if getattr(u, 'is_company', False)]
+    sent_msgs = messages.find({"sender_id": user["_id"]})
+    recv_msgs = messages.find({"recipient_id": user["_id"]})
+
+    conversation_user_ids = set()
+    for m in sent_msgs:
+        conversation_user_ids.add(m["recipient_id"])
+    for m in recv_msgs:
+        conversation_user_ids.add(m["sender_id"])
+
+    conversation_user_ids.discard(user["_id"])
+
+    conversation_users = list(users.find({"_id": {"$in": list(conversation_user_ids)}}))
+
+    user_conversations = [u for u in conversation_users if not u.get("is_company", False)]
+    company_conversations = [u for u in conversation_users if u.get("is_company", False)]
 
     selected_username = request.args.get('with')
     selected_user = None
-    messages = []
+    convo_messages = []
     if selected_username:
-        selected_user = User.query.filter_by(username=selected_username).first()
+        selected_user = users.find_one({"username": selected_username})
         if selected_user:
-            messages = Message.query.filter(
-                ((Message.sender_id == user.id) & (Message.recipient_id == selected_user.id)) |
-                ((Message.sender_id == selected_user.id) & (Message.recipient_id == user.id))
-            ).order_by(Message.timestamp.asc()).all()
+            convo_messages = list(messages.find({
+                "$or": [
+                    {"sender_id": user["_id"], "recipient_id": selected_user["_id"]},
+                    {"sender_id": selected_user["_id"], "recipient_id": user["_id"]}
+                ]
+            }).sort("timestamp", 1))
 
     return render_template(
         'message.html',
@@ -622,49 +675,77 @@ def message():
         user_conversations=user_conversations,
         company_conversations=company_conversations,
         selected_user=selected_user,
-        messages=messages
+        messages=convo_messages
     )
 
 #* Application
 
-@app.route('/application', methods=['GET', 'POST'])
+@app.route('/application')
 def application():
-    try:
-        if'user_id' not in session:
-            return redirect(url_for('login'))
-        user = User.query.get(session['user_id'])
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user_id = ObjectId(session['user_id'])
 
-        active_statuses = ['Applied', 'Interview', 'Offer']
-        inactive_statuses = ['Rejected', 'Withdrawn', 'Closed']
+    # MongoDB aggregation to join applications and jobs
+    pipeline = [
+        {"$match": {"user_id": user_id}},
+        {"$lookup": {
+            "from": "search_results",
+            "localField": "job_id",
+            "foreignField": "_id",
+            "as": "job"
+        }},
+        {"$unwind": "$job"},
+        {"$sort": {"applied_at": -1}}
+    ]
 
-        active_apps = [app for app in user.applications if app.status in active_statuses]
-        inactive_apps = [app for app in user.applications if app.status in inactive_statuses]
-        return render_template('application.html', user=user, active_apps=active_apps, inactive_apps=inactive_apps)
+    apps = list(applications.aggregate(pipeline))
 
-    except Exception as e:
-        app.logger.error(f'Error in /application route: {e}')
-        return 'An error occured'
+    active_statuses = ['Applied', 'Interview', 'Offer']
+    inactive_statuses = ['Rejected', 'Withdrawn', 'Closed']
 
-@app.route('/apply/<int:result_id>', methods=['POST'])
+    active_apps = [a for a in apps if a.get("status") in active_statuses]
+    inactive_apps = [a for a in apps if a.get("status") in inactive_statuses]
+
+    user = users.find_one({"_id": user_id})
+
+    return render_template("application.html", user=user, active_apps=active_apps, inactive_apps=inactive_apps)
+
+@app.route('/apply/<string:result_id>', methods=['POST'])
 def apply(result_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    user = User.query.get(session['user_id'])
-    if not user or not user.resume_filename:
-        return "No resume", redirect(url_for('upload_resume'))
-    
-    resume_txt = resume_text(user.username)
-    internship = SearchResult.query.get(result_id)
+
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        return redirect(url_for('login'))
+
+    if 'resume_filename' not in user:
+        return redirect(url_for('upload_resume'))
+
+    try:
+        internship = search_results.find_one({"_id": ObjectId(result_id)})
+    except:
+        return "Invalid internship ID", 400
+
     if not internship:
         return "Internship not found", 404
-    
-    application = Application(user_id=user.id, job_id=internship.id, status='Applied')
-    db.session.add(application)
-    db.session.commit()
 
-    internship_description = internship.description or ""
+    resume_txt = resume_text(user["username"])
+
+    internship_description = internship.get("description", "")
     if not internship_description:
         return "Internship description not available", 404
+
+    applications.insert_one({
+        "user_id": user["_id"],
+        "job_id": internship["_id"],
+        "title": internship.get("job", "Internship"),
+        "company": internship.get("company", "Unknown"),
+        "applied_at": datetime.utcnow(),
+        "status": "Applied"
+    })
 
     common_words, match_percent = optimize_resume(resume_txt, internship_description)
 
@@ -676,36 +757,45 @@ def apply(result_id):
         user=user
     )
 
-@app.route('/apply_linkedin', methods=['POST'])
-def apply_linkedin():
+@app.route('/apply_posting', methods=['POST'])
+def apply_posting():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    user = User.query.get(session['user_id'])
-    # Save the posting to SearchResult if not already saved
+
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        return redirect(url_for('login'))
+
     job = request.form['title']
     company = request.form['company']
     location = request.form['location']
     description = request.form['description']
     url = request.form['url']
-    # Check if already exists
-    existing = SearchResult.query.filter_by(job=job, company=company, url=url).first()
+
+    existing = search_results.find_one({
+        "job": job,
+        "company": company,
+        "url": url
+    })
+
     if not existing:
-        new_result = SearchResult(
-            job=job,
-            company=company,
-            location=location,
-            description=description,
-            url=url
-        )
-        db.session.add(new_result)
-        db.session.commit()
-        result_id = new_result.id
+        result_id = search_results.insert_one({
+            "job": job,
+            "company": company,
+            "location": location,
+            "description": description,
+            "url": url
+        }).inserted_id
     else:
-        result_id = existing.id
-    # Create application
-    application = Application(user_id=user.id, job_id=result_id, status='Applied')
-    db.session.add(application)
-    db.session.commit()
+        result_id = existing["_id"]
+
+    applications.insert_one({
+        "user_id": user["_id"],
+        "job_id": result_id,
+        "status": "Applied",
+        "applied_at": datetime.utcnow()
+    })
+
     return redirect(url_for('application'))
 
 #* Saved
@@ -716,21 +806,23 @@ def saved():
         if 'user_id' not in session:
             return redirect(url_for('login'))
 
-        user_id = session['user_id']        
-        user = User.query.filter_by(id=user_id).first()
+        user_id = ObjectId(session['user_id'])        
+        user = users.find_one({"_id": user_id})
 
         if not user:
             return 'User not found', 404
-        
-        saved_results = SearchResult.query.join(SavedListing, SavedListing.job_id == SearchResult.id)\
-            .filter(SavedListing.user_id == user_id).all()
-        
+
+        saved_docs = list(saved_listings.find({"user_id": user_id}))
+
+        job_ids = [doc.get("job_id") for doc in saved_docs if doc.get("job_id")]
+
+        saved_results = list(search_results.find({"_id": {"$in": job_ids}}))
+
         return render_template('saved.html', user=user, saved_results=saved_results)
+
     except Exception as e:
-        app.logger.error(f'Error in /message route: {e}')
-        return 'An error occured while fetching saved'
+        app.logger.error(f'Error in /saved route: {e}')
+        return 'An error occurred while fetching saved listings'
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
